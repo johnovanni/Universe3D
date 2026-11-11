@@ -11,7 +11,8 @@ public static class RedshiftMath
     private const double CmbApexL = 264.0, CmbApexB = 48.3;
     private const double LocalGroupKms = 300.0;
     private const double H0 = 70.0;
-    private const double CosmicExpansionZ = 0.1;
+    /// <summary>Above this redshift the shift is described as cosmic expansion and peculiar velocities are not computed.</summary>
+    public const double CosmicExpansionZ = 0.1;
 
     private static readonly Vector3d CmbApex = SkyMath.UnitVector(CmbApexL, CmbApexB);
 

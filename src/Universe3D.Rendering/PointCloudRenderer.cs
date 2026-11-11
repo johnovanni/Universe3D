@@ -141,6 +141,13 @@ public sealed class PointCloudRenderer : IDisposable
         return faint > bright ? new Vector2((float)bright, (float)faint) : Vector2.Zero;
     }
 
+    /// <summary>The type color of a <c>TypeCode</c> in a data set (RGB 0–1), for legends.</summary>
+    public static Vector3 TypeColor(DataSetKind kind, uint typeCode)
+    {
+        var palette = TypePalette(kind);
+        return palette[Math.Min(typeCode, (uint)palette.Length - 1)];
+    }
+
     /// <summary>Colors by <c>TypeCode</c>: morphology class, cluster catalog bits (R7) or quasar type.</summary>
     private static Vector3[] TypePalette(DataSetKind kind)
     {

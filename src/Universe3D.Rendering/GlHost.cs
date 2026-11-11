@@ -59,6 +59,21 @@ public sealed class GlHost
         });
     }
 
+    /// <summary>
+    /// Stops drawing and runs <paramref name="release"/> with the GL context current, so GL objects can be deleted
+    /// (call it when the window closes). Does nothing but stop when the context was never created.
+    /// </summary>
+    public void Shutdown(Action release)
+    {
+        _control.Render -= OnRender;
+        _animating = false;
+        _framesOwed = 0;
+        if (_control.RenderContinuously) _control.RenderContinuously = false;
+        if (!_contextReady || _control.Context is not { } context) return;
+        context.MakeCurrent();
+        release();
+    }
+
     public void RequestRender()
     {
         _framesOwed = FramesPerRequest;
