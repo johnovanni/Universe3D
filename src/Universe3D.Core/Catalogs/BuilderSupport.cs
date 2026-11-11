@@ -67,9 +67,16 @@ internal static class BuilderSupport
         : n.StartsWith("PGC ", StringComparison.Ordinal) || n.StartsWith("2MASX", StringComparison.Ordinal) ? 5
         : 4;
 
-    /// <summary>Physical diameter in kpc of an object <paramref name="arcmin"/> across at <paramref name="distanceMpc"/>.</summary>
-    public static double? DiameterKpc(double? arcmin, double distanceMpc) =>
-        arcmin is { } a && a > 0 ? distanceMpc * 1000.0 * a / 60.0 * Math.PI / 180.0 : null;
+    /// <summary>
+    /// Physical diameter in kpc of an object <paramref name="arcmin"/> across at comoving distance
+    /// <paramref name="distanceMpc"/>, using the angular-diameter distance D_A = D_C / (1 + z) (ruling R15).
+    /// </summary>
+    public static double? DiameterKpc(double? arcmin, double distanceMpc)
+    {
+        if (arcmin is not { } a || a <= 0) return null;
+        double z = CosmologyModel.Default.RedshiftAtComovingDistance(distanceMpc);
+        return distanceMpc / (1 + z) * 1000.0 * a / 60.0 * Math.PI / 180.0;
+    }
 
     /// <summary>Decimal RA/Dec of a row, or null when either is missing.</summary>
     public static (double Ra, double Dec)? Position(TsvTable t, int row, string raCol, string decCol) =>

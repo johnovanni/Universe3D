@@ -87,6 +87,17 @@ public class BuilderTests
     }
 
     [Fact]
+    public async Task LocalVolume_DiameterUsesAngularDiameterDistance()
+    {
+        var ds = await Build(new LocalVolumeBuilder());
+        var n253 = Assert.Single(ds.Objects.OfType<Galaxy>(), g => g.AltNames.Contains("NGC 253"));
+        double z = Universe3D.Core.Cosmology.CosmologyModel.Default.RedshiftAtComovingDistance(3.94);
+        double expected = 3940.0 * 37.15 / 60.0 * Math.PI / 180.0 / (1 + z);
+        Assert.Equal(expected, n253.DiameterKpc!.Value, 6);
+        Assert.True(z > 0 && expected < 3940.0 * 37.15 / 60.0 * Math.PI / 180.0); // D_A < D_C
+    }
+
+    [Fact]
     public async Task NearbyUniverse_M87()
     {
         var ds = await Build(new NearbyUniverseBuilder());
