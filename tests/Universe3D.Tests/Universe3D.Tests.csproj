@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -18,6 +19,8 @@
 
   <ItemGroup>
     <Using Include="Xunit" />
+    <Using Include="System.IO" />
+    <Using Include="System.Net.Http" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Universe3D.Core\Universe3D.Core.csproj" />
+    <ProjectReference Include="..\..\src\Universe3D.Rendering\Universe3D.Rendering.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,16 @@
+﻿<Window x:Class="Universe3D.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
+        Title="Universe3D" Width="1280" Height="800" Background="#05050A"
+        WindowStartupLocation="CenterScreen">
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Background="#181820" Padding="8,6">
+            <ComboBox x:Name="DataSetCombo" Width="220" HorizontalAlignment="Left"
+                      DisplayMemberPath="Label" SelectionChanged="DataSetCombo_SelectionChanged" />
+        </Border>
+        <gl:GLWpfControl x:Name="GlControl"
+                         MouseDown="Gl_MouseDown" MouseMove="Gl_MouseMove" MouseUp="Gl_MouseUp"
+                         MouseWheel="Gl_MouseWheel" />
+    </DockPanel>
+</Window>
