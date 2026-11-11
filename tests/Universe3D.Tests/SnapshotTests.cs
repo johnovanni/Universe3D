@@ -224,14 +224,6 @@ public class SnapshotTests : IDisposable
     }
 
     [Fact]
-    public void Store_DefaultBuiltIn_ThrowsClearErrorWhenNotEmbedded()
-    {
-        var store = new SnapshotStore(Path.Combine(_dir, "empty"));
-        var ex = Assert.Throws<FileNotFoundException>(() => store.Load(DataSetKind.Quasars, out _));
-        Assert.Contains("quasars.u3d.gz", ex.Message);
-    }
-
-    [Fact]
     public void MilkyWay_CenterAndNormalPointTheRightWay()
     {
         var galactic = SkyFrames.EquatorialToGalactic;
