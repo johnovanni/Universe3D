@@ -78,7 +78,9 @@ void main()
     bool inside = D <= 1.02 * R;
     // Projected diameter, as Projector.PixelSize and points.vert measure it.
     float px = inside ? 1e9 : (depth > 0.0 ? 2.0 * R * u_focalPx / depth : 0.0);
-    float fade = smoothstep(u_fadeRange.x, u_fadeRange.y, px);
+    // smoothstep is undefined when edge0 >= edge1: treat such a window as a hard step.
+    float fade = u_fadeRange.y > u_fadeRange.x ? smoothstep(u_fadeRange.x, u_fadeRange.y, px)
+                                               : step(u_fadeRange.x, px);
     if (!visible || R <= 0.0 || fade <= 0.0) { drop(); return; }
 
     vec3 p;

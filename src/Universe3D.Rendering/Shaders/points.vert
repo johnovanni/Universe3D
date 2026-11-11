@@ -22,7 +22,7 @@ uniform vec3 u_typeColors[16];
 uniform vec2 u_magRange;     // (bright, faint)
 uniform float u_pointScale;
 uniform float u_alpha;
-uniform vec2 u_fadeRange;     // px; galaxies cross-fade to shapes: alpha * (1 - smoothstep(x, y, px)); (0, 0) = off
+uniform vec2 u_fadeRange;     // px; galaxies cross-fade to shapes: alpha * (1 - smoothstep(x, y, px)); off unless x < y
 uniform int u_growWithDiameter;
 
 out vec4 v_color;
@@ -63,7 +63,8 @@ void main()
     size *= u_pointScale;
     // Projected diameter, the same measure ShapeRenderer selects shapes by.
     float px = (a_diameter > 0.0 && gl_Position.w > 0.0) ? a_diameter * u_focalPx / gl_Position.w : 0.0;
-    float fade = (u_fadeRange.y > 0.0 && a_diameter > 0.0) ? smoothstep(u_fadeRange.x, u_fadeRange.y, px) : 0.0;
+    // Off unless the window is a valid range (smoothstep is undefined when edge0 >= edge1).
+    float fade = (u_fadeRange.y > u_fadeRange.x && a_diameter > 0.0) ? smoothstep(u_fadeRange.x, u_fadeRange.y, px) : 0.0;
     if (fade >= 1.0)
     {
         gl_Position = vec4(2.0, 2.0, 2.0, 1.0);   // fully replaced by its shape

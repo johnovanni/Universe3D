@@ -114,6 +114,70 @@ public class ShapeSelectionTests
         Assert.Equal(new[] { 1 }, selected);
     }
 
+    private static OrbitCamera SunCamera() =>
+        new() { Target = new Vector3d(10, 0, 0), DistanceMpc = 10, YawDeg = 180, PitchDeg = 0 };
+
+    private static ShapeLod Lod(IReadOnlyList<Galaxy>? galaxies = null) =>
+        new(new ShapeCandidates(galaxies ?? Synthetic(), Universe3D.Core.Coordinates.DisplayFrame.Equatorial));
+
+    [Fact]
+    public void ShapeLod_HiddenThenShownWithUnchangedCamera_ReselectsAndRestoresTheWindow()
+    {
+        var lod = Lod();
+        var cam = SunCamera();
+        Assert.True(lod.Update(true, cam, 1600, 900, MaxDistance, TypeMask, 20_000));
+        Assert.Equal(new OpenTK.Mathematics.Vector2(4, 8), lod.FadeRangePx);
+        int shown = lod.Selected.Count;
+        Assert.True(shown > 0);
+
+        Assert.False(lod.Update(true, cam, 1600, 900, MaxDistance, TypeMask, 20_000)); // cached
+        Assert.Equal(new OpenTK.Mathematics.Vector2(4, 8), lod.FadeRangePx);
+
+        Assert.True(lod.Update(false, cam, 1600, 900, MaxDistance, TypeMask, 20_000)); // hidden: nothing drawn
+        Assert.Equal(OpenTK.Mathematics.Vector2.Zero, lod.FadeRangePx);
+        Assert.Empty(lod.Selected);
+
+        Assert.True(lod.Update(true, cam, 1600, 900, MaxDistance, TypeMask, 20_000));   // shown again, same camera
+        Assert.Equal(new OpenTK.Mathematics.Vector2(4, 8), lod.FadeRangePx);
+        Assert.Equal(shown, lod.Selected.Count);
+    }
+
+    [Fact]
+    public void ShapeLod_CapLeavesGalaxiesOut_WindowStartsAtTheSmallestShape()
+    {
+        var galaxies = Synthetic();
+        var lod = Lod(galaxies);
+        var cam = SunCamera();
+        Assert.True(lod.Update(true, cam, 1600, 900, MaxDistance, TypeMask, 50));
+        Assert.Equal(50, lod.Selected.Count);
+        double smallest = Px(new Projector(cam, 1600, 900), galaxies[lod.Selected[^1]]);
+        Assert.True(smallest > 4);
+        Assert.Equal(smallest, lod.FadeRangePx.X, smallest * 1e-6);
+        Assert.Equal(2 * lod.FadeRangePx.X, lod.FadeRangePx.Y, 1e-3);
+    }
+
+    [Fact]
+    public void ShapeLod_NoCandidates_NoShapesAndNoFade()
+    {
+        var noDiameters = Synthetic().Select(g => new Galaxy
+        {
+            Id = g.Id, RaDeg = g.RaDeg, DecDeg = g.DecDeg, DistanceMpc = g.DistanceMpc, Morphology = g.Morphology,
+        }).ToList();
+        foreach (var lod in new[] { Lod(noDiameters), Lod(Array.Empty<Galaxy>()), new ShapeLod(null) })
+        {
+            lod.Update(true, SunCamera(), 1600, 900, MaxDistance, TypeMask, 20_000);
+            Assert.Equal(OpenTK.Mathematics.Vector2.Zero, lod.FadeRangePx);
+            Assert.Empty(lod.Selected);
+        }
+    }
+
+    [Theory]
+    [InlineData(0, 4, 8)]
+    [InlineData(2.5, 4, 8)]
+    [InlineData(12, 12, 24)]
+    public void ShapeLod_FadeWindow(double cutoffPx, float lo, float hi) =>
+        Assert.Equal(new OpenTK.Mathematics.Vector2(lo, hi), ShapeLod.FadeWindow(cutoffPx));
+
     /// <summary>
     /// The instance's ellipsoid, projected on the sky as seen from the Sun, has the catalog PA and axis ratio:
     /// disks via the inclination with q0 = 0.2, ellipsoids directly. Built in the galactic frame and rotated back.

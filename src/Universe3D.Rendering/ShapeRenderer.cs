@@ -135,6 +135,65 @@ public sealed class ShapeCandidates
 }
 
 /// <summary>
+/// The shape level of detail without GL: which galaxies are shapes for the current camera and filters (re-selected
+/// only when they change), and the cross-fade window the point shader uses.
+/// </summary>
+public sealed class ShapeLod
+{
+    private readonly ShapeCandidates? _candidates;
+    private IReadOnlyList<int> _selected = Array.Empty<int>();
+    private SelectionKey? _selectedFor;
+
+    private readonly record struct SelectionKey(
+        Vector3d Eye, double Yaw, double Pitch, double Fov, double W, double H, double MaxDistance, uint TypeMask,
+        int Cap);
+
+    /// <param name="candidates">The loaded data set's galaxies, or null for none.</param>
+    public ShapeLod(ShapeCandidates? candidates) => _candidates = candidates;
+
+    /// <summary>Indices into the candidates' galaxy list, largest first; empty while shapes are hidden.</summary>
+    public IReadOnlyList<int> Selected => _selected;
+
+    /// <summary>
+    /// The cross-fade window in framebuffer pixels: (4, 8), or shifted up to the smallest shape drawn when the cap
+    /// left galaxies out (so those stay points). (0, 0) when no shapes can be drawn, which turns the point fade off.
+    /// </summary>
+    public Vector2 FadeRangePx { get; private set; }
+
+    /// <summary>
+    /// Re-selects when the camera, viewport (framebuffer px), filters or cap changed, or the shapes were hidden since
+    /// the last call. Returns true when <see cref="Selected"/> changed.
+    /// </summary>
+    public bool Update(bool visible, OrbitCamera cam, double widthPx, double heightPx, double maxDistanceMpc,
+                       uint typeMask, int cap)
+    {
+        if (!visible || _candidates == null || _candidates.Count == 0 || widthPx <= 0 || heightPx <= 0)
+        {
+            bool changed = _selected.Count > 0;
+            _selected = Array.Empty<int>();
+            _selectedFor = null; // the next visible call re-selects, even with the camera unchanged
+            FadeRangePx = Vector2.Zero;
+            return changed;
+        }
+        var key = new SelectionKey(cam.Eye, cam.YawDeg, cam.PitchDeg, cam.FieldOfViewDeg, widthPx, heightPx,
+                                   maxDistanceMpc, typeMask, cap);
+        if (key == _selectedFor) return false;
+        _selectedFor = key;
+        _selected = _candidates.Select(new Projector(cam, widthPx, heightPx), maxDistanceMpc, typeMask, cap,
+                                       out double cutoff);
+        FadeRangePx = FadeWindow(cutoff);
+        return true;
+    }
+
+    /// <summary>(lo, 2·lo) with lo = max(4, cutoff): the spec's (4, 8), shifted up when the cap binds.</summary>
+    public static Vector2 FadeWindow(double cutoffPx)
+    {
+        float lo = (float)Math.Clamp(cutoffPx, ShapeRenderer.FadeStartPx, 1e6);
+        return new Vector2(lo, lo * (float)(ShapeRenderer.FadeEndPx / ShapeRenderer.FadeStartPx));
+    }
+}
+
+/// <summary>
 /// Galaxy shapes: instanced ellipsoid impostors for galaxies whose projected diameter exceeds 4 px, chosen on the
 /// CPU when the camera or the filters change. Disks (spirals, barred spirals, lenticulars, irregulars and
 /// unclassified galaxies) are oblate spheroids of thickness q₀ = 0.2 oriented by
@@ -156,15 +215,9 @@ public sealed class ShapeRenderer : IDisposable
     private readonly ShaderProgram _program;
     private readonly ShapeInstanceBuffer _buffer = new();
 
-    private ShapeCandidates? _candidates;
+    private ShapeLod _lod = new(null);
     private ShapeInstance[] _byGalaxy = Array.Empty<ShapeInstance>();
     private ShapeInstance[] _staging = Array.Empty<ShapeInstance>();
-    private SelectionKey? _selectedFor;
-    private int _version;
-
-    private readonly record struct SelectionKey(
-        int Version, Vector3d Eye, double Yaw, double Pitch, double Fov, double W, double H,
-        double MaxDistance, uint TypeMask, int Cap);
 
     /// <summary>Requires a current GL context. Filters, color mode and palette follow <paramref name="points"/>.</summary>
     public ShapeRenderer(PointCloudRenderer points)
@@ -181,11 +234,8 @@ public sealed class ShapeRenderer : IDisposable
     /// <summary>Shapes drawn in the last frame.</summary>
     public int ShapeCount => Visible ? _buffer.Count : 0;
 
-    /// <summary>
-    /// The cross-fade window in framebuffer pixels for the point shader: (4, 8), or shifted up to the smallest
-    /// shape drawn when the cap left galaxies out (so those stay points). (0, 0) when no shapes are drawn.
-    /// </summary>
-    public Vector2 FadeRangePx { get; private set; }
+    /// <inheritdoc cref="ShapeLod.FadeRangePx"/>
+    public Vector2 FadeRangePx => _lod.FadeRangePx;
 
     /// <summary>
     /// Indices into <paramref name="galaxies"/> of the shapes to draw: shown by the distance and type filters, on
@@ -202,41 +252,30 @@ public sealed class ShapeRenderer : IDisposable
     {
         var galaxies = ds.Objects.OfType<Galaxy>().ToList();
         var m = SkyFrames.EquatorialTo(frame);
-        _candidates = new ShapeCandidates(galaxies, frame);
+        var candidates = new ShapeCandidates(galaxies, frame);
+        _lod = new ShapeLod(candidates);
         _byGalaxy = new ShapeInstance[galaxies.Count];
         for (int i = 0; i < galaxies.Count; i++)
             if (galaxies[i].DiameterKpc is double kpc && kpc > 0) _byGalaxy[i] = Build(galaxies[i], m);
-        _staging = new ShapeInstance[Math.Min(_candidates.Count, 1 << 20)];
+        _staging = new ShapeInstance[Math.Min(candidates.Count, 1 << 20)];
         _buffer.Upload(_staging, 0);
-        _version++;
-        _selectedFor = null;
     }
 
-    /// <summary>Re-selects the instances when the camera, viewport (framebuffer px) or filters changed.</summary>
+    /// <summary>Re-selects the instances when the camera, viewport (framebuffer px), filters or visibility changed.</summary>
     public void Update(OrbitCamera cam, Size viewport)
     {
-        if (!Visible || _candidates == null || _candidates.Count == 0 || viewport.Width <= 0 || viewport.Height <= 0)
-        {
-            FadeRangePx = Vector2.Zero;
+        if (!_lod.Update(Visible, cam, viewport.Width, viewport.Height, _points.MaxDistanceMpc, _points.TypeMask, Cap))
             return;
-        }
-        var key = new SelectionKey(_version, cam.Eye, cam.YawDeg, cam.PitchDeg, cam.FieldOfViewDeg, viewport.Width,
-                                   viewport.Height, _points.MaxDistanceMpc, _points.TypeMask, Cap);
-        if (key == _selectedFor) return;
-        _selectedFor = key;
-
-        var proj = new Projector(cam, viewport.Width, viewport.Height);
-        var selected = _candidates.Select(proj, _points.MaxDistanceMpc, _points.TypeMask, Cap, out double cutoff);
+        var selected = _lod.Selected;
         int count = Math.Min(selected.Count, _staging.Length);
         for (int i = 0; i < count; i++) _staging[i] = _byGalaxy[selected[i]];
         _buffer.Upload(_staging, count);
-        float lo = (float)Math.Clamp(cutoff, FadeStartPx, 1e6);
-        FadeRangePx = new Vector2(lo, lo * (float)(FadeEndPx / FadeStartPx));
     }
 
     public void Render(OrbitCamera cam, Size viewport)
     {
-        if (!Visible || _buffer.Count == 0) return;
+        // A (0, 0) window means no selection is current: draw nothing rather than shapes without a fade.
+        if (!Visible || _buffer.Count == 0 || FadeRangePx.Y <= FadeRangePx.X) return;
         GL.Enable(EnableCap.Blend);
         GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
         _program.Use();
