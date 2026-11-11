@@ -252,7 +252,8 @@ C:\repos\Universe3D
     Shapes/      GalaxyOrientation (inclination, disk normal, quaternion)
     Catalogs/    VizierClient (mirror fallback), TsvTable, SkyCrossMatcher (spatial hash),
                  DataSetBuilder + one builder per data set, SnapshotSerializer (gzip binary),
-                 SnapshotStore (embedded + %LOCALAPPDATA%\Universe3D)
+                 IDataSetStore (storage interface), SnapshotStore : IDataSetStore
+                 (embedded + %LOCALAPPDATA%\Universe3D)
     Data/Embedded/  the four built-in snapshots (*.u3d.gz)
   src/Universe3D.Rendering     (net8.0-windows; OpenTK, GLWpfControl)
     GlHost, ShaderProgram, Buffers, PointCloudRenderer, VelocityArrowRenderer, ShapeRenderer, ClusterRenderer,
@@ -267,6 +268,15 @@ C:\repos\Universe3D
 - The **same builders** create the built-in snapshots (through the console tool) and serve "Download latest" in
   the app. Downloads run in the background with progress reporting and cancellation.
 - `Directory.Build.props` contains the same short-path rule as SolarSystem3D, so builds also work in deep folders.
+- **Storage is behind one interface**, `IDataSetStore`, so a SQLite database can replace or sit beside the snapshot
+  files later (§11). Today's implementation is `SnapshotStore`. Three rules keep that switch cheap:
+  1. **Nothing outside a store reads or writes data files.** The App, `DownloadService` and the snapshot tool depend
+     only on `IDataSetStore` and receive it through their constructors.
+  2. **Every object has a stable, unique `Id`** of the form `<catalog>:<catalog identifier>`, for example
+     `2MRS:00424433+4116074`, `UNGC:NGC0224`, `MCXC:J1259.7+2756`, `ABELL:1656`, `MQ:3C 273`. Ids are unique within a data set and
+     identical across rebuilds, so they can serve as database primary keys.
+  3. **The object model has no file-format details.** `DataSet` and `CosmicObject` are plain C# types; only
+     `SnapshotSerializer` knows the binary layout.
 
 ## 7. Error handling
 
@@ -332,3 +342,37 @@ xUnit tests in `Universe3D.Tests`:
 - Galaxy images or photo textures (shapes are procedural).
 - Distances from photometric redshifts; only spectroscopic or measured distances are used.
 - Galaxies beyond 2MRS depth (deep surveys such as SDSS cover only part of the sky).
+- A database. Data is stored as compressed snapshot files; SQLite is a planned future option (§11).
+
+## 11. Future option: SQLite storage
+
+Decided on 2026-11-11: **ship with snapshot files**, and keep SQLite as a designed-for future step. Nothing in this
+section is built now. §6 says what the current code must do to keep the step cheap.
+
+**Why it might be added later.** Possible later features:
+- browsing a data set as a sortable, filterable table,
+- exporting subsets to CSV,
+- ad-hoc queries (for example "spirals 50–100 Mpc away with z > 0.02"),
+- keeping raw source catalogs, so data sets can be rebuilt with new rules without downloading again.
+
+**Expected size.** About 200–300 MB with indexes: quasars ~150–200 MB (~900,000 rows), 2MRS ~10–15 MB, everything
+else under 5 MB, plus an optional ~30–60 MB of raw source catalogs. That is well within SQLite's limits and the disk
+estimate in §1.
+
+**Intended design:**
+- **Library:** `Microsoft.Data.Sqlite`, one database file at `%LOCALAPPDATA%\Universe3D\universe3d.db`.
+- **Implementation:** `SqliteDataSetStore : IDataSetStore`. The App and `DownloadService` stay unchanged.
+- **Schema sketch:**
+  - `objects` (id primary key, kind, name, ra, dec, distance_mpc, distance_source, z, cz_helio, v_cmb, pec_kms,
+    lookback_gyr, magnitude), indexed on (kind, distance_mpc), (kind, z) and (ra, dec).
+  - One side table per object type (`galaxies`, `clusters`, `quasars`) keyed by id.
+  - `names` (id, normalized_name), for search.
+  - `datasets` (kind, built_utc, source_summary, skipped_rows, excluded_count).
+- **First run:** the app keeps shipping the small built-in snapshots (~25 MB) and imports them into the database
+  once. "Download latest" then writes to the database, in a single transaction, so a failed or cancelled download
+  leaves the old data intact.
+- **Loading the 3D view:** the app reads a whole data set into memory as today. Expect ~1–2 s for all quasars,
+  compared with ~0.5 s from a snapshot.
+
+**The trigger** for doing this is the user asking for the table view, CSV export or queries. It would be added as
+its own spec revision and plan task.
