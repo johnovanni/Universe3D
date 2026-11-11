@@ -1,0 +1,92 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:51 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:51	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/144/4/catalog&-out=Name,MType,_RAJ2000,_DEJ2000,D,HRV,PA,Ell&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_51440004
+#Name: J/AJ/144/4
+#Title: Properties of dwarf galaxies in the Local Group (McConnachie+, 2012)
+#INFO	ivoid=ivo://cds.vizier/j/aj/144/4	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/j/aj/144/4	    IVOID of underlying data collection
+#INFO	creator=McConnachie A.W.	    First author or institution
+#INFO	cites=bibcode:2012AJ....144....4M	    Article or Data origin sources
+#INFO	journal=AJ	    Journal name
+#INFO	original_date=2012	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/AJ/144/4	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.51440004	    Dataset identifier that can be used for citation
+#INFO	publication_date=2025-11-24	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_AJ_144_4_catalog:
+#Name: J/AJ/144/4/catalog
+#Title: Catalog of the observed properties of dwarf galaxies in and around the Local Group (tables 1--5 of paper)
+#Column	Name	(a29)	Galaxy name	[ucd=meta.id;meta.main]
+#Column	MType	(a9)	Morphological (Hubble) type (3)	[ucd=src.morph.type]
+#Column	_RAJ2000	(F10.6)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F10.6)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	D	(I4)	? Heliocentric distance (7)	[ucd=pos.distance;pos.heliocentric]
+#Column	HRV	(F6.1)	? Heliocentric radial velocity (9)	[ucd=spect.dopplerVeloc;pos.heliocentric]
+#Column	PA	(I3)	[-69-330]? Position angle of major axis, measured in degrees east from north (16)	[ucd=pos.posAng]
+#Column	Ell	(F5.2)	? Ellipticity {epsilon}=1-b/a, where a and b are the semimajor and semiminor axes (16)	[ucd=src.ellipticity]
+Name	MType	_RAJ2000	_DEJ2000	D	HRV	PA	Ell
+ 	 	deg	deg	kpc	km/s	deg	
+-----------------------------	---------	----------	----------	----	------	---	-----
+The Galaxy                   	S(B)bc   	266.416667	-29.007778	    	      	   	
+Canis Major                  	????     	108.145833	-27.666667	   7	  87.0	123	 0.80
+Sagittarius dSph             	dSph     	283.831250	-30.545278	  26	 140.0	102	 0.64
+Segue (I)                    	dSph     	151.766667	+16.081944	  23	 208.5	 85	 0.48
+Ursa Major II                	dSph     	132.875000	+63.130000	  32	-116.5	 98	 0.63
+Bootes II                    	dSph     	209.500000	+12.850000	  42	-117.0	145	 0.21
+Segue II                     	dSph     	034.816667	+20.175278	  35	 -39.2	182	 0.15
+Willman 1                    	dSph     	162.337500	+51.050000	  38	 -12.3	 77	 0.47
+Coma Berenices               	dSph     	186.745833	+23.904167	  44	  98.1	115	 0.38
+Bootes III                   	dSph?    	209.300000	+26.800000	  47	 197.5	 90	 0.50
+LMC                          	Irr      	080.893750	-69.756111	  51	 262.2	   	
+SMC                          	dIrr     	013.186667	-72.828611	  64	 145.6	   	
+Bootes (I)                   	dSph     	210.025000	+14.500000	  66	  99.0	 14	 0.39
+Draco                        	dSph     	260.051667	+57.915278	  76	-291.0	 89	 0.31
+Ursa Minor                   	dSph     	227.285417	+67.222500	  76	-246.9	 53	 0.56
+Sculptor                     	dSph     	015.039167	-33.709167	  86	 111.4	 99	 0.32
+Sextans (I)                  	dSph     	153.262500	 -1.614722	  86	 224.2	 56	 0.35
+Ursa Major (I)               	dSph     	158.720000	+51.920000	  97	 -55.3	 71	 0.80
+Carina                       	dSph     	100.402917	-50.966111	 105	 222.9	 65	 0.33
+Hercules                     	dSph     	247.758333	+12.791667	 132	  45.2	102	 0.68
+Fornax                       	dSph     	039.997083	-34.449167	 147	  55.3	 41	 0.30
+Leo IV                       	dSph     	173.237500	 -0.533333	 154	 132.3	121	 0.49
+Canes Venatici II            	dSph     	194.291667	+34.320833	 160	-128.9	177	 0.52
+Leo V                        	dSph     	172.790000	 +2.220000	 178	 173.3	 96	 0.50
+Pisces II                    	dSph     	344.629167	 +5.952500	 182	      	 77	 0.40
+Canes Venatici (I)           	dSph     	202.014583	+33.555833	 218	  30.9	 70	 0.39
+Leo II                       	dSph     	168.370000	+22.151667	 233	  78.0	 12	 0.13
+Leo I                        	dSph     	152.117083	+12.306389	 254	 282.5	 79	 0.21
+Andromeda                    	Sb       	010.684583	+41.269167	 783	-300.0	   	
+M32                          	cE       	010.674167	+40.865278	 805	-199.0	159	 0.25
+Andromeda IX                 	dSph     	013.220833	+43.195833	 766	-207.7	   	
+NGC 205                      	dE/dSph  	010.092083	+41.685278	 824	-246.0	 28	 0.43
+Andromeda XVII               	dSph     	009.279167	+44.322222	 794	      	122	 0.27
+Andromeda I                  	dSph     	011.415833	+38.041111	 745	-375.8	 22	 0.22
+Andromeda XXVII              	dSph     	009.362917	+45.386944	 828	      	150	 0.40
+Andromeda III                	dSph     	008.890833	+36.497778	 748	-345.6	136	 0.52
+Andromeda XXV                	dSph     	007.537083	+46.851944	 813	      	170	 0.25
+Andromeda XXVI               	dSph     	005.940000	+47.916111	 762	      	145	 0.25
+Andromeda XI                 	dSph     	011.583333	+33.801389	 759	-419.6	   	
+Andromeda V                  	dSph     	017.571250	+47.628056	 773	-403.0	 32	 0.18
+Andromeda X                  	dSph     	016.640417	+44.804444	 701	-163.8	 46	 0.44
+Andromeda XXIII              	dSph     	022.340833	+38.718889	 769	      	138	 0.40
+Andromeda XX                 	dSph     	001.877917	+35.132222	 802	      	 80	 0.30
+Andromeda XII                	dSph     	011.862500	+34.374722	 871	-558.4	   	
+NGC 147                      	dE/dSph  	008.300417	+48.508889	 676	-193.1	 25	 0.41
+Andromeda XXI                	dSph     	358.698750	+42.470833	 859	      	110	 0.20
+Andromeda XIV                	dSph     	012.895833	+29.696944	 735	-481.0	   	 0.31
+Andromeda XV                 	dSph     	018.577917	+38.117500	 631	-339.0	  0	 0.00
+Andromeda XIII               	dSph     	012.962500	+33.004444	 912	-195.0	   	
+Andromeda II                 	dSph     	019.124167	+33.419167	 652	-193.6	 34	 0.20
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/144/4/catalog&-out=Name,MType,_RAJ2000,_DEJ2000,D,HRV,PA,Ell&-c=10.6847%2B41.2690&-c.rm=1&-out.max=50

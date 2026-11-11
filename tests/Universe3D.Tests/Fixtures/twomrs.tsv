@@ -1,0 +1,96 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:53 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:53	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJS/199/26/table3&-out=ID,RAJ2000,DEJ2000,Kcmag,b/a,type,cz,Riso,CAT,SimbadName&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_21990026
+#Name: J/ApJS/199/26
+#Title: The 2MASS Redshift Survey (2MRS) (Huchra+, 2012)
+#INFO	ivoid=ivo://cds.vizier/j/apjs/199/26	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/j/apjs/199/26	    IVOID of underlying data collection
+#INFO	creator=Huchra J.P.	    First author or institution
+#INFO	cites=bibcode:2012ApJS..199...26H	    Article or Data origin sources
+#INFO	journal=ApJS	    Journal name
+#INFO	original_date=2012	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/ApJS/199/26	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.21990026	    Dataset identifier that can be used for citation
+#INFO	publication_date=2017-09-19	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_ApJS_199_26_table3:
+#Name: J/ApJS/199/26/table3
+#Title: 2MRS catalog
+#Column	ID	(A16)	2MASS ID from XSC (Cat. VII/233) or 2MASS Large Galaxy Atlas (LGA) databases (Jarrett et al. 2003AJ....125..525J)	[ucd=meta.id;meta.main]
+#Column	RAJ2000	(F9.5)	Right Ascension in decimal degrees (J2000)	[ucd=pos.eq.ra;meta.main]
+#Column	DEJ2000	(F9.5)	Declination in decimal degrees (J2000)	[ucd=pos.eq.dec;meta.main]
+#Column	Kcmag	(F6.3)	Extinction-corrected 2MASS Ks magnitude (1)	[ucd=phot.mag;em.IR.K]
+#Column	b/a	(F6.3)	Axis ratio of the J+H+Ks co-added image at the 3{sigma} isophote	[ucd=phys.angSize;arith.ratio]
+#Column	type	(a5)	Morphological type, expressed using the ZCAT convention (G1)	[ucd=src.morph.type]
+#Column	cz	(I5)	? Redshift, corrected to solar system barycenter reference frame	[ucd=phys.veloc;pos.heliocentric]
+#Column	Riso	(F6.3)	Log of K=20 mag/sq arcsec elliptical isophote semimajor axis	[ucd=phys.angSize;src]
+#Column	CAT	(a28)	Galaxy identification in input redshift catalog	[ucd=meta.id]
+#Column	SimbadName	(f)	Simbad column added by the CDS	[ucd=meta.id]
+ID	RAJ2000	DEJ2000	Kcmag	b/a	type	cz	Riso	CAT	SimbadName
+ 	deg	deg	mag	 	 	km/s	[arcsec]	 	
+----------------	---------	---------	------	------	-----	-----	------	----------------------------	--------------------------
+00424433+4116074	010.68471	+41.26875	 0.797	 0.473	 3A2s	 -300	 3.208	MESSIER_031                 	2MASX J00424433+4116074
+00473313-2517196	011.88806	-25.28880	 3.815	 0.264	 5X_s	  243	 2.799	NGC_0253                    	2MASX J00473313-2517196
+09553318+6903549	148.88826	+69.06526	 3.898	 0.517	 2A2s	  -34	 2.688	MESSIER_081                 	2MASX J09553318+6903549
+13252775-4301073	201.36565	-43.01871	 3.948	 0.957	-2__P	  547	 2.445	NGC_5128                    	2MASX J13252775-4301073
+13052727-4928044	196.36366	-49.46790	 4.471	 0.308	 6B_s	  563	 2.627	NGC_4945                    	2MASX J13052727-4928044
+01335090+3039357	023.46210	+30.65994	 4.477	 0.792	 5A4s	 -179	 2.699	MESSIER_033                 	2MASX J01335090+3039357
+09555243+6940469	148.96846	+69.67970	 4.636	 0.396	 0   	  203	 2.357	MESSIER_082                 	2MASX J09555243+6940469
+03464851+6805459	056.70214	+68.09611	 4.682	 0.858	 6X2T	   31	 2.571	IC_0342                     	2MASX J03464851+6805459
+13370091-2951567	204.25383	-29.86576	 4.721	 0.825	 5X2s	  513	 2.495	MESSIER_083                 	2MASX J13370091-2951567
+12395949-1137230	189.99789	-11.62307	 4.991	 0.682	 1A_P	 1024	 2.305	MESSIER_104                 	2MASX J12395949-1137230
+00424182+4051546	010.67427	+40.86517	 5.084	 0.913	-6   	 -200	 2.168	MESSIER_032                 	2MASX J00424182+4051546
+12505314+4107125	192.72145	+41.12015	 5.163	 0.847	 2A3R	  308	 2.236	MESSIER_094                 	2MASX J12505314+4107125
+12564369+2140575	194.18207	+21.68266	 5.381	 0.583	 2A_T	  408	 2.332	MESSIER_064                 	2MASX J12564369+2140575
+20345233+6009132	308.71805	+60.15368	 5.424	 0.770	 6X1T	   40	 2.402	NGC_6946                    	2MASX J20345233+6009132
+12294679+0800014	187.44499	+08.00041	 5.498	 0.913	-5   	  997	 2.253	MESSIER_049                 	2MASX J12294679+0800014
+13295269+4711429	202.46957	+47.19526	 5.589	 0.902	 4A1P	  463	 2.296	MESSIER_051a                	2MASX J13295269+4711429
+12185761+4718133	184.74008	+47.30372	 5.592	 0.495	 4X_s	  448	 2.421	MESSIER_106                 	2MASX J12185761+4718133
+03224178-3712295	050.67412	-37.20820	 5.681	 0.792	-2X_P	 1760	 2.220	NGC_1316                    	2MASX J03224178-3712295
+13154932+4201454	198.95554	+42.02929	 5.722	 0.660	 4A3T	  484	 2.310	MESSIER_063                 	2MASX J13154932+4201454
+02424077-0000478	040.66988	-00.01329	 5.800	 0.880	 3A_T	 1137	 1.978	MESSIER_077                 	2MASX J02424077-0000478
+12434000+1133093	190.91670	+11.55261	 5.816	 0.891	-5   	 1117	 2.166	MESSIER_060                 	2MASX J12434000+1133093
+03171859-4106290	049.32750	-41.10807	 5.847	 0.891	 0B_s	  788	 2.157	g0317186-410629             	2MASX J03171859-4106290
+11054859-0002092	166.45247	-00.03590	 5.848	 0.693	 4X3T	  801	 2.216	NGC_3521                    	2MASX J11054859-0002092
+00402207+4141070	010.09198	+41.68530	 5.866	 0.594	-5   	 -241	 2.450	MESSIER_110                 	2MASX J00402207+4141070
+12304942+1223279	187.70593	+12.39110	 5.896	 0.990	-4__P	 1307	 2.134	MESSIER_087                 	2MASX J12304942+1223279
+10051397-0743068	151.30824	-07.71858	 5.921	 0.451	-3   	  663	 2.216	NGC_3115                    	2MASX J10051397-0743068
+11201502+1259286	170.06261	+12.99129	 5.939	 0.539	 3X3s	  727	 2.267	MESSIER_066                 	2MASX J11201502+1259286
+14031258+5420555	210.80243	+54.34875	 5.940	 0.979	 6X1T	  246	 2.373	14031253+5420561            	2MASX J14031258+5420555
+02223290+4220539	035.63711	+42.34832	 5.971	 0.264	 5A_s	  528	 2.353	NGC_0891                    	2MASX J02223290+4220539
+04074690+6948447	061.94545	+69.81243	 5.995	 0.803	 2A_s	  895	 2.200	IC_0356                     	2MASX J04074690+6948447
+22370410+3424573	339.26709	+34.41592	 6.081	 0.539	 4A2s	  816	 2.193	NGC_7331                    	2MASX J22370410+3424573
+09321011+2130029	143.04213	+21.50083	 6.089	 0.616	 4X2T	  556	 2.212	NGC_2903                    	2MASX J09321011+2130029
+11185595+1305319	169.73315	+13.09221	 6.104	 0.308	 1X3T	  807	 2.326	MESSIER_065                 	2MASX J11185595+1305319
+12362080+2559146	189.08669	+25.98739	 6.125	 0.330	 3A1s	 1230	 2.281	NGC_4565                    	2MASX J12362080+2559146
+09220265+5058353	140.51106	+50.97648	 6.153	 0.495	 3A1R	  638	 2.258	NGC_2841                    	2MASX J09220265+5058353
+19094609-6351271	287.44208	-63.85754	 6.182	 0.726	 4X3R	  841	 2.337	NGC_6744                    	2MASX J19094609-6351271
+11201701+1335221	170.07091	+13.58949	 6.211	 0.286	 3__P	  825	 2.403	11201701+1335228            	2MASX J11201701+1335221
+12252405+1811278	186.35022	+18.19108	 6.249	 0.781	-1A_P	  729	 2.170	MESSIER_085                 	2MASX J12252405+1811278
+09423326-0341568	145.63867	-03.69914	 6.250	 0.560	-5   	 1919	 1.852	NGC_2974                    	2MASX J09423326-0341568
+12261181+1256454	186.54922	+12.94597	 6.273	 0.825	-5   	 -244	 2.180	MESSIER_086                 	2MASX J12261181+1256454
+02402401+3903477	040.10005	+39.06325	 6.311	 0.374	-2B_T	  637	 2.258	NGC_1023                    	2MASX J02402401+3903477
+12315921+1425134	187.99673	+14.42041	 6.321	 0.506	 3A1T	 2281	 2.191	MESSIER_088                 	2MASX J12315921+1425134
+09121949-2410213	138.08124	-24.17260	 6.322	 0.484	-2A_s	  686	 2.170	g0912194-241021             	2MASX J09121949-2410213
+12250377+1253130	186.26575	+12.88696	 6.333	 1.000	-5   	 1060	 2.061	MESSIER_084                 	2MASX J12250377+1253130
+04161046-5546485	064.04361	-55.78014	 6.345	 0.748	-2A_R	 1201	 2.066	04161030-5546510            	2MASX J04161046-5546485
+10474959+1234538	161.95667	+12.58163	 6.353	 0.979	-5   	  911	 2.033	MESSIER_105                 	2MASX J10474959+1234538
+08524134+3325184	133.17227	+33.42180	 6.375	 0.396	 3A3t	  411	 2.185	NGC_2683                    	2MASX J08524134+3325184
+12502661+2530027	192.61089	+25.50076	 6.380	 0.704	 2X1R	 1206	 2.242	NGC_4725                    	2MASX J12502661+2530027
+13295958+4715580	202.49829	+47.26613	 6.389	 0.990	 0__P	  465	 2.094	MESSIER_051b                	2MASX J13295958+4715580
+10464574+1149117	161.69060	+11.81994	 6.394	 0.726	 2X_T	  897	 2.086	MESSIER_096                 	2MASX J10464574+1149117
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJS/199/26/table3&-out=ID,RAJ2000,DEJ2000,Kcmag,b/a,type,cz,Riso,CAT,SimbadName&-c=10.6847%2B41.2690&-c.rm=1&-out.max=50
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJS/199/26/table3&-out=ID,RAJ2000,DEJ2000,Kcmag,b/a,type,cz,Riso,CAT,SimbadName&-c=187.7059%2B12.3911&-c.rm=1&-out.max=50
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJS/199/26/table3&-out=ID,RAJ2000,DEJ2000,Kcmag,b/a,type,cz,Riso,CAT,SimbadName&-c=11.8880-25.2880&-c.rm=1&-out.max=50

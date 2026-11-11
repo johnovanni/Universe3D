@@ -1,0 +1,96 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:50 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:50	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_51450101
+#Name: J/AJ/145/101
+#Title: Updated nearby galaxy catalog (Karachentsev+, 2013)
+#INFO	ivoid=ivo://cds.vizier/j/aj/145/101	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/j/aj/145/101	    IVOID of underlying data collection
+#INFO	creator=Karachentsev I.D.	    First author or institution
+#INFO	cites=bibcode:2013AJ....145..101K	    Article or Data origin sources
+#INFO	journal=AJ	    Journal name
+#INFO	original_date=2013	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/AJ/145/101	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.51450101	    Dataset identifier that can be used for citation
+#INFO	publication_date=2017-06-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_AJ_145_101_catalog:
+#Name: J/AJ/145/101/catalog
+#Title: Catalog of galaxies in the  the Local Volume
+#Column	Name	(a18)	Galaxy name in well-known catalogs	[ucd=meta.id;meta.main]
+#Column	_RAJ2000	(F10.6)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F10.6)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	a26	(F6.2)	[0.1/645.65]? Major angular diameter (1)	[ucd=phys.angSize]
+#Column	b/a	(F5.2)	[0/1]? Apparent axial ratio (1)	[ucd=phys.angSize;arith.ratio]
+#Column	TT	(I2)	[-3/11]? Morphology T-type code (10)	[ucd=src.morph]
+#Column	Tdw	(A1)	Dwarf galaxy surface brightness morphology (H=high, N=normal, L=low, X=extremely low) (11)	[ucd=meta.code;src.morph]
+#Column	HRV	(I4)	[-556/2219]? Heliocentric radial velocity (12)	[ucd=spect.dopplerVeloc;pos.heliocentric]
+#Column	Dist	(F5.2)	[0.01/26.2] Distance to galaxy	[ucd=pos.distance;pos.heliocentric]
+#Column	i	(I2)	[0/90]? Inclination of galaxy from the face-on (i=0) position	[ucd=src]
+#Column	Vlg	(I4)	[-303/2094]? Local group radial velocity (21)	[ucd=phys.veloc;pos.lg]
+Name	_RAJ2000	_DEJ2000	a26	b/a	TT	Tdw	HRV	Dist	i	Vlg
+ 	deg	deg	arcmin	 	 	 	km/s	Mpc	deg	km/s
+------------------	----------	----------	------	-----	--	-	----	-----	--	----
+UGC12894          	000.093750	+39.495556	  1.02	 0.87	10	L	 335	 8.47	33	 619
+WLM               	000.492083	-15.461111	 11.48	 0.35	 9	N	-122	 0.97	90	 -16
+And XVIII         	000.560417	+45.088889	  1.40	 0.99	-3	L	-332	 1.36	10	 -44
+ESO409-015        	001.382500	-28.098056	  1.20	 0.46	 9	N	 726	 7.70	78	 769
+AGC748778         	001.643333	+15.510833	  0.32	 0.52	10	L	 258	 5.40	70	 486
+And XX            	001.877917	+35.132222	  0.80	 0.70	-3	X	-456	 0.80	58	-182
+UGC00064          	001.933333	+40.875556	  1.66	 0.56	10	N	 305	 9.60	66	 587
+ESO349-031        	002.055417	-34.578333	  1.23	 0.82	10	L	 221	 3.21	39	 230
+NGC0024           	002.485000	-24.963333	  7.24	 0.22	 5	 	 550	 9.90	85	 606
+NGC0045           	003.516250	-23.182222	  8.51	 0.69	 8	 	 465	 9.20	47	 528
+NGC0055           	003.785417	-39.220278	 37.15	 0.17	 8	 	 129	 2.13	84	 111
+NGC0059           	003.854583	-21.443889	  2.29	 0.48	-3	N	 361	 5.30	90	 431
+ESO410-005        	003.880833	-32.180000	  1.62	 0.77	10	N	  36	 1.92	45	  53
+And XIX           	004.883750	+35.043611	  6.20	 0.83	-3	X	-111	 0.93	41	 157
+IC0010            	005.102083	+59.291667	  6.76	 0.87	10	N	-346	 0.66	33	 -62
+And XXVI          	005.940000	+47.916111	  1.60	 0.75	-3	X	-261	 0.76	52	  21
+Sc22              	005.965417	-24.705000	  0.93	 0.78	-3	L	    	 4.21	48	
+Cetus             	006.545833	-11.044444	  4.79	 0.67	-1	L	 -87	 0.78	55	  26
+ESO294-010        	006.638750	-41.855556	  1.51	 0.64	10	N	 107	 1.92	58	  71
+UGC00288          	007.266667	+43.431667	  1.07	 0.62	10	N	 187	 6.73	60	 463
+And XXV           	007.537083	+46.851944	  4.80	 0.75	-3	X	-108	 0.81	52	 170
+ESO473-024        	007.843750	-22.765833	  1.55	 0.59	10	N	 530	 9.90	63	 584
+NGC0147           	008.298333	+48.507778	 13.49	 0.61	-3	N	-193	 0.76	70	  85
+And III           	008.890833	+36.497778	  3.63	 0.48	-3	L	-346	 0.75	90	 -82
+And XXX           	009.145417	+49.646667	      	     	  	 	-141	 0.68	  	 136
+And XVII          	009.279167	+44.322222	  1.90	 0.80	-2	X	-251	 0.74	43	  22
+And XXVII         	009.362917	+45.386944	  2.80	 0.60	-3	X	-535	 0.83	71	-261
+NGC0185           	009.741667	+48.336111	 12.30	 0.85	-3	N	-203	 0.61	39	  73
+NGC0205           	010.093750	+41.686389	 19.50	 0.61	-2	N	-221	 0.82	64	  47
+And IV            	010.625417	+40.575833	  1.00	 0.77	10	L	 237	 6.31	45	 503
+MESSIER032        	010.675417	+40.866389	  8.91	 0.71	-2	H	-202	 0.49	53	  64
+MESSIER031        	010.685417	+41.269167	190.55	 0.33	 3	 	-296	 0.77	78	 -29
+DDO226            	010.765833	-22.250278	  2.24	 0.36	10	N	 359	 4.92	90	 409
+And I             	011.416667	+38.037222	  2.88	 0.78	-3	L	-376	 0.73	48	-116
+And XI            	011.583333	+33.801389	  1.10	 0.85	-3	X	-419	 0.73	39	-167
+NGC0247           	011.784583	-20.760000	 25.12	 0.32	 7	 	 161	 3.65	74	 216
+And XII           	011.862500	+34.374722	  1.90	 0.90	-3	X	-556	 0.83	31	-303
+NGC0253           	011.892917	-25.292222	 37.15	 0.22	 5	 	 243	 3.94	85	 276
+KDG002            	012.337917	-18.074444	  1.23	 0.92	10	L	 224	 3.40	26	 290
+DDO006            	012.455417	-21.016111	  2.29	 0.41	10	N	 292	 3.34	90	 344
+ESO540-032        	012.602500	-19.906944	  1.51	 0.92	10	L	 228	 3.42	26	 285
+Bol520            	012.676667	+32.916389	  0.20	 0.89	-3	H	-312	 0.63	33	 -64
+And XIV           	012.895833	+29.696944	  2.70	 0.68	-3	X	-481	 0.73	60	-240
+And XIII          	012.962500	+33.004444	  1.30	 0.75	-3	X	-195	 0.84	52	  53
+SMC               	013.158333	-72.800278	380.19	 0.64	 9	N	 158	 0.06	58	 -22
+And IX            	013.220000	+43.200000	  4.00	 0.75	-3	X	-216	 0.79	52	  48
+NGC0300           	013.722917	-37.682500	 25.70	 0.71	 7	 	 146	 2.15	45	 116
+And XVI           	014.874167	+32.376667	  1.78	 0.90	-3	L	-385	 0.52	31	-143
+Sculptor          	015.039167	-33.709167	 39.81	 0.68	-3	X	 105	 0.09	60	  91
+LGS 3             	015.979167	+21.885000	  2.40	 0.58	10	L	-286	 0.65	64	 -74
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=10.6847%2B41.2690&-c.rm=1&-out.max=50
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=11.8880-25.2880&-c.rm=1&-out.max=50

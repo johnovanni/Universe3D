@@ -1,0 +1,89 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:56 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:56	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/110A/table4&-out=ACO,_RAJ2000,_DEJ2000,z,Rich,BMtype&z=%3E0&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_7110
+#Name: VII/110A
+#Title: Rich Clusters of Galaxies (Abell+ 1989)
+#INFO	ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	creator=Abell G.O.	    First author or institution
+#INFO	cites=bibcode:1989ApJS...70....1A	    Article or Data origin sources
+#INFO	journal=ApJS	    Journal name
+#INFO	original_date=1989	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VII/110A	    Dataset landing page
+#INFO	publication_date=2012-11-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Coosys	B1950:	eq_FK4 B1950
+#Table	VII_110A_table4:
+#Name: VII/110A/table4
+#Title: Southern "Abell Catalog"
+#Column	ACO	(I4)	[2713,4076]+ "Abell" number for the southern rich cluster	[ucd=meta.id;meta.main]
+#Column	_RAJ2000	(F8.4)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F8.4)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	z	(F7.4)	? cluster redshift from Struble and Rood (1987ApJS...63..555S)	[ucd=src.redshift]
+#Column	Rich	(I1)	richness, from Abell (1958ApJS....3..211A)	[ucd=src.class.richness]
+#Column	BMtype	(a7)	[- I:?]! cluster classification in the Bautz-Morgan system	[ucd=src.class.struct]
+ACO	_RAJ2000	_DEJ2000	z	Rich	BMtype
+ 	deg	deg	 	 	
+----	--------	--------	-------	-	-------
+2717	000.8140	-35.9549	 0.0498	1	I-II
+2721	001.5366	-34.7217	 0.1140	3	II
+2730	002.4831	-35.6885	 0.1140	1	II
+2731	002.5489	-56.9885	 0.0312	0	III:
+2744	003.5814	-30.3887	 0.3080	3	III
+2762	004.8606	-53.5391	 0.1124	0	II
+2764	005.1135	-49.2226	 0.0641	1	II
+2798	009.3917	-28.5418	 0.1126	1	I-II
+2806	010.0450	-56.1589	 0.0271	0	I-II
+2824	012.1432	-21.3442	 0.0486	0	III
+2860	016.0275	-39.7820	 0.0268	0	I
+2870	016.9300	-46.9166	 0.0250	0	I
+2877	017.4555	-45.9007	 0.0241	0	I
+2889	018.6908	-48.5025	 0.0667	1	I-II
+2896	019.5708	-37.1039	 0.0317	0	I
+2911	021.5116	-37.9738	 0.0202	1	I-II
+2933	025.1750	-54.5642	 0.0208	1	III
+2988	033.2267	-47.1331	 0.0649	1	I-II
+2995	033.7942	-24.8345	 0.0378	1	I-II
+3004	034.7149	-48.0038	 0.0635	0	I-II
+3009	035.5326	-48.5728	 0.0631	1	I
+3040	040.0309	-55.4195	 0.0923	1	II
+3078	045.1146	-51.8362	 0.0600	0	I
+3093	047.7167	-47.3953	 0.0585	2	I
+3106	048.6296	-58.0987	 0.0645	0	I-II
+3108	048.8109	-47.6326	 0.0632	1	II
+3109	049.1633	-43.8505	 0.0673	0	I
+3110	049.1315	-50.9004	 0.0755	0	I-II
+3112	049.4846	-44.2350	 0.0703	2	I
+3120	050.4723	-51.3221	 0.0696	0	I
+3123	050.7394	-52.0231	 0.0650	0	I-II
+3125	051.8445	-53.5107	 0.0593	0	III
+3126	052.1678	-55.7119	 0.0862	1	III
+3128	052.5517	-52.5633	 0.0554	3	I-II
+3136	053.0590	-71.8327	 0.1203	1	II
+3144	054.2673	-55.0201	 0.0423	1	I-II
+3157	055.8829	-29.9428	 0.2090	2	I-II?
+3158	055.7527	-53.6426	 0.0590	2	I-II
+3164	056.4572	-57.0456	 0.0611	0	I-II
+3193	059.5544	-52.3415	 0.0340	0	I
+3202	060.0624	-53.6604	 0.0388	1	II
+3207	060.7158	-27.1961	 0.2120	1	II-III
+3225	062.3197	-59.6035	 0.0433	0	II
+3231	062.9670	-64.6065	 0.0570	1	II
+3266	067.7906	-61.4777	 0.0594	2	I-II
+3330	078.6758	-49.0612	 0.0903	1	II
+3334	079.4928	-58.5487	 0.0953	2	I-II
+3338	080.6575	-48.2707	 0.0446	0	II-III
+3376	090.1816	-40.0499	 0.0455	0	I
+3380	091.7399	-49.4910	 0.0567	0	I-II

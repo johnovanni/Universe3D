@@ -1,0 +1,95 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:52 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:52	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/237/pgc&-out=PGC,_RAJ2000,_DEJ2000,MType,logD25,logR25,PA&logD25=%3E0.6&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_7237
+#Name: VII/237
+#Title: HYPERLEDA. I. Catalog of galaxies (Paturel+, 2003)
+#INFO	ivoid=ivo://cds.vizier/vii/237	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/vii/237	    IVOID of underlying data collection
+#INFO	creator=Paturel G.	    First author or institution
+#INFO	cites=bibcode:2003A&A...412...45P	    Article or Data origin sources
+#INFO	journal=A&A	    Journal name
+#INFO	original_date=2003	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VII/237	    Dataset landing page
+#INFO	publication_date=2017-09-22	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	VII_237_pgc:
+#Name: VII/237/pgc
+#Title: Catalog of galaxies (table 5 in the paper)
+#Column	PGC	(I7)	PGC number	[ucd=meta.id;meta.main]
+#Column	_RAJ2000	(F10.6)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F10.6)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	MType	(a5)	Provisional morphological type from LEDA according to the RC2 code.	[ucd=src.morph.type]
+#Column	logD25	(F5.2)	? Apparent diameter (2)	[ucd=phys.angSize;src]
+#Column	logR25	(F5.2)	? Axis ratio in log scale (log of major axis to minor axis)	[ucd=phys.size;arith.ratio]
+#Column	PA	(F4)	? Adopted 1950-position angle (3)	[ucd=pos.posAng]
+PGC	_RAJ2000	_DEJ2000	MType	logD25	logR25	PA
+ 	deg	deg	 	[0.1arcmin]	[---]	deg
+-------	----------	----------	-----	-----	-----	----
+1985872	000.002500	+32.209167	     	 0.79	 0.19	 178
+1963523	000.003333	+31.769722	     	 0.89	 0.37	 113
+ 130936	000.003333	-40.903333	E    	 0.93	 0.30	  19
+1283524	000.003333	 +5.443611	     	 0.78	 0.08	  68
+1205857	000.003750	 +1.787222	     	 0.64	 0.23	  91
+ 820316	000.004167	-22.025000	     	 0.65	 0.55	 177
+2009149	000.005000	+32.710000	     	 0.71	 0.27	 107
+      2	000.006667	+47.274722	SBb  	 1.27	 0.17	 162
+1281052	000.010417	 +5.289167	     	 0.63	 0.14	  46
+ 133590	000.011250	-23.367500	SO-a 	 0.69	 0.09	  26
+ 143105	000.011667	-34.064722	     	 0.79	 0.55	  27
+ 923433	000.012083	-14.529722	     	 0.62	 0.48	  24
+ 371047	000.012083	-59.489167	     	 0.73	 0.37	 122
+      3	000.012917	-18.008333	Sc   	 0.82	 0.36	
+ 775188	000.013333	-25.775833	     	 0.64	 0.51	
+ 974615	000.013750	-10.721111	     	 0.70	 0.69	 158
+      4	000.014167	+23.087778	Sc   	 0.93	 0.68	  63
+1964345	000.014583	+31.786389	     	 0.74	 0.16	 162
+  73199	000.015000	+26.013889	Sc   	 0.86	 0.37	  79
+ 129171	000.016667	-49.281111	Sc   	 0.82	 0.34	 121
+      7	000.018333	 -0.084444	E-SO 	 0.75	 0.09	 162
+ 822314	000.018750	-21.888333	     	 0.64	 0.32	 105
+     15	000.021250	 -5.209444	Sc   	 0.82	 0.00	
+1815123	000.021667	+27.683333	     	 0.78	 0.50	 130
+1344920	000.022917	 +8.343889	     	 0.61	 0.17	 171
+1828876	000.023333	+28.191667	     	 0.64	 0.35	  87
+ 199318	000.024167	-35.655833	     	 0.67	 0.31	 144
+1484403	000.025417	+15.430000	     	 0.63	 0.32	 143
+1829164	000.025417	+28.202222	     	 0.75	 0.38	 169
+2437724	000.027083	+53.320556	     	 0.80	 0.13	  10
+2050404	000.027500	+34.515000	     	 0.62	 0.06	 161
+ 828790	000.027500	-21.400000	     	 0.61	 0.16	 174
+ 143109	000.027917	 -7.875000	     	 0.65	 0.07	 137
+     14	000.029167	 +8.279167	E    	 1.16	 0.23	   9
+ 311006	000.029583	-65.695556	     	 0.71	 0.41	   1
+ 751018	000.029583	-27.705278	     	 0.75	 0.61	  68
+ 357331	000.030417	-61.185000	     	 0.65	 0.03	
+2024610	000.031667	+33.143611	     	 0.69	 0.15	 160
+ 238506	000.032083	-76.875833	     	 0.66	 0.54	 158
+     10	000.032083	 -0.041111	E-SO 	 0.74	 0.09	  34
+ 734383	000.032500	-29.025000	     	 0.65	 0.70	  17
+ 128384	000.033750	-53.846111	Sc   	 0.88	 0.14	 101
+      9	000.034583	-77.338611	     	 0.62	 0.24	 121
+     12	000.035833	 -6.373889	Sa   	 1.16	 0.69	 167
+ 143111	000.036667	-33.693333	     	 0.78	 0.35	 137
+  73200	000.036667	+25.350000	Sc   	 0.65	 0.25	  51
+ 130029	000.036667	-46.080556	     	 0.70	 0.21	 116
+ 519650	000.037083	-46.045000	     	 0.65	 0.61	  86
+ 890587	000.037500	-16.986389	     	 0.78	 0.13	 111
+     11	000.037500	-77.341389	     	 0.65	 0.27	  29
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/237/pgc&-out=PGC,_RAJ2000,_DEJ2000,MType,logD25,logR25,PA&logD25=%3E0.6&-c=10.6847%2B41.2690&-c.rm=1&-out.max=50
+   2557	010.684583	+41.269444	Sb   	 3.30	 0.45	  35
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/237/pgc&-out=PGC,_RAJ2000,_DEJ2000,MType,logD25,logR25,PA&logD25=%3E0.6&-c=187.7059%2B12.3911&-c.rm=1&-out.max=50
+  41361	187.705000	+12.391389	E    	 1.96	 0.06	
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/237/pgc&-out=PGC,_RAJ2000,_DEJ2000,MType,logD25,logR25,PA&logD25=%3E0.6&-c=11.8880-25.2880&-c.rm=1&-out.max=50
+   2789	011.887500	-25.288333	SBc  	 2.46	 0.69	  53

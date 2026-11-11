@@ -1,0 +1,101 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:56 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:56	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_7294
+#Name: VII/294
+#Title: The Million Quasars (Milliquas) catalogue, version 8 (Flesch, 2023)
+#INFO	ivoid=ivo://cds.vizier/vii/294	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/vii/294	    IVOID of underlying data collection
+#INFO	creator=Flesch E.W	    First author or institution
+#INFO	cites=bibcode:2023OJAp....6E..49F	    Article or Data origin sources
+#INFO	journal=OJAp	    Journal name
+#INFO	original_date=2023	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VII/294	    Dataset landing page
+#INFO	publication_date=2024-02-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	VII_294_catalog:
+#Name: VII/294/catalog
+#Title: The catalogue (v8), 30-Jul-2023
+#Column	RAJ2000	(F11.7)	Right ascension (J2000) (1)	[ucd=pos.eq.ra;meta.main]
+#Column	DEJ2000	(F11.7)	Declination (J2000) (1)	[ucd=pos.eq.dec;meta.main]
+#Column	Name	(A25)	ID from the literature, or J2000 (2)	[ucd=meta.id;meta.main]
+#Column	Type	(A4)	Classification of object, and associations (3)	[ucd=meta.code.class;src.class]
+#Column	Rmag	(F5.2)	? Red optical magnitude (4)	[ucd=phot.mag;em.opt.R]
+#Column	Bmag	(F5.2)	? Blue optical magnitude (4)	[ucd=phot.mag;em.opt.B]
+#Column	z	(F6.3)	? Redshift from the literature or estimated (7)	[ucd=src.redshift]
+RAJ2000	DEJ2000	Name	Type	Rmag	Bmag	z
+deg	deg	 	 	mag	mag	
+-----------	-----------	-------------------------	----	-----	-----	------
+000.0006286	+35.5178439	SDSS J000000.15+353104.2 	Q   	17.93	19.00	 0.845
+000.0006575	-20.0743440	UVQSJ000000.15-200427.7  	AX  	17.90	18.46	 0.291
+000.0014503	+31.0570374	SDSS J000000.33+310325.3 	Q   	19.95	21.29	 2.035
+000.0015265	+27.7322834	SDSS J000000.36+274356.2 	Q   	21.75	21.91	 1.771
+000.0015354	+07.0641294	SDSS J000000.36+070350.8 	Q   	21.87	22.11	 1.574
+000.0018983	+17.7737392	SDSS J000000.45+174625.4 	Q   	22.07	21.91	 2.309
+000.0019186	+09.3856563	SDSS J000000.45+092308.2 	Q   	18.58	18.87	 2.024
+000.0019784	-00.4510884	SDSS J000000.47-002703.9 	A   	20.51	21.19	 0.250
+000.0024158	+05.9418820	SDSS J000000.57+055630.8 	Q   	21.34	21.62	 2.103
+000.0025788	+31.3289781	SDSS J000000.62+311944.3 	Q   	19.38	20.03	 1.991
+000.0027644	+14.9746807	SDSS J000000.66+145828.8 	Q   	20.89	21.22	 2.497
+000.0030062	+30.9662614	SDSS J000000.72+305758.5 	Q   	21.04	21.47	 1.623
+000.0031742	+05.2627357	SDSS J000000.76+051545.8 	Q   	22.03	22.13	 1.548
+000.0032493	+11.7076422	LAMOSTJ000000.77+114227.5	Q   	18.26	19.09	 0.508
+000.0037807	+01.2815600	SDSS J000000.90+011653.6 	N   	18.39	21.05	 0.251
+000.0040756	+04.8297891	SDSS J000000.97+044947.2 	Q   	19.63	19.95	 1.619
+000.0042343	+08.0729440	SDSS J000001.01+080422.5 	Q   	19.83	21.01	 0.857
+000.0045479	+29.8735815	SDSS J000001.08+295225.0 	Q   	18.11	21.48	 1.496
+000.0050341	+24.0651552	SDSS J000001.20+240354.5 	Q   	20.91	21.49	 1.616
+000.0051343	+36.0948485	SDSS J000001.23+360541.5 	Q   	21.81	22.03	 1.616
+000.0052954	+07.0246577	KX 208                   	Q   	18.22	18.68	 1.227
+000.0053239	-02.0332551	FBQS J00000-0202         	QR  	19.22	19.98	 1.360
+000.0056121	+11.3416043	SDSS J000001.33+112029.8 	Q   	21.62	21.77	 0.538
+000.0057075	-30.6074297	2QZ J000001.3-303627     	Q   	18.96	20.39	 1.143
+000.0057181	-01.3250060	SDSS J000001.37-011930.0 	Q   	20.16	20.14	 2.328
+000.0059063	+20.0122631	SDSS J000001.41+200044.1 	Q   	20.76	21.11	 3.090
+000.0061322	+29.0019782	SDSS J000001.47+290007.0 	Q   	19.33	19.86	 1.580
+000.0061470	+21.2767149	SDSS J000001.47+211636.1 	Q   	20.57	20.90	 0.935
+000.0064636	-00.5590659	SDSS J000001.55-003332.6 	Q   	22.65	22.57	 2.220
+000.0065127	+20.5031984	SDSS J000001.56+203011.5 	Q   	21.24	21.33	 2.083
+000.0068188	+30.5193562	SDSS J000001.63+303109.6 	Q   	21.83	21.92	 2.377
+000.0068554	+00.5831839	SDSS J000001.64+003459.4 	Q   	22.46	22.43	 2.271
+000.0072754	-31.3738125	2QZ J000001.7-312226     	Q   	20.21	20.97	 1.331
+000.0074036	-07.4859053	SDSS J000001.76-072909.3 	QR  	20.30	20.84	 2.538
+000.0075871	+14.1973825	SDSS J000001.81+141150.5 	Q   	20.67	21.82	 3.711
+000.0077255	+14.0245030	SDSS J000001.85+140128.2 	N   	19.32	21.64	 0.480
+000.0078790	-09.7811013	Gaia 2422929658858444288 	X   	19.30	19.46	 3.370
+000.0078956	+44.5149450	Gaia 385021862214884352  	X   	19.45	19.68	 2.120
+000.0080613	-00.2409634	SDSS J000001.93-001427.4 	Q   	19.93	20.10	 2.163
+000.0081458	+05.3524372	SDSS J000001.95+052108.7 	Q   	19.35	19.49	 0.404
+000.0085631	+34.6786823	SDSS J000002.05+344043.2 	Q   	21.87	21.94	 1.576
+000.0085957	+19.4048968	SDSS J000002.06+192417.7 	Q   	21.16	21.37	 0.847
+000.0086882	+27.4523709	SDSS J000002.09+272708.5 	Q   	20.53	20.96	 1.360
+000.0089611	+15.2546542	SDSS J000002.15+151516.6 	Q   	21.16	21.33	 1.710
+000.0090725	+21.9125938	J000002.17+215445.3      	R   	18.48	18.57	 1.300
+000.0091250	-02.3297799	SDSS J000002.19-021947.2 	Q   	21.06	21.07	 1.966
+000.0092103	+11.6968604	SDSS J000002.20+114148.5 	Q   	20.39	20.71	 2.559
+000.0094881	+00.6275587	SDSS J000002.27+003739.1 	NX  	18.29	20.90	 0.248
+000.0095124	-32.0246628	2QZ J000002.2-320129     	K   	20.05	21.26	 0.981
+000.0097917	-04.4677500	IRASF 23574-0444         	NR  	13.58	14.97	 0.102
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&-c=187.2779%2B2.0524&-c.rm=1&-out.max=50
+187.2779154	+02.0523886	3C 273                   	QRX 	14.11	13.73	 0.158
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&Type=R&-out.max=3
+000.1313421	+18.9067001	SDSS J000031.52+185424.1 	R   	20.98	21.35	 1.400
+000.1467759	-77.1153834	Gaia 4684095834143447680 	R   	19.55	20.05	 1.610
+000.1502952	-65.8987688	WISEA J000036.08-655355.5	R   	18.99	18.61	 1.700
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&Type=X&-out.max=3
+009.5696045	-44.6570781	Gaia 4980429404833821312 	X   	20.25	20.44	 1.540
+009.5842168	+13.5145223	Gaia 2779306116432021632 	X   	18.22	18.74	 0.490
+009.5868584	-50.6853106	Gaia 4926271653937715584 	X   	19.67	20.63	 1.340
+# Synthetic row (hand-written, not from VizieR) for Builder_CountsSkippedRows: blank RA.
+           	+10.0000000	SYNTHETIC BLANK RA       	Q   	18.00	19.00	 1.000

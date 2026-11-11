@@ -1,0 +1,89 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:56 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:56	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/110A/table5&-out=ACOS,_RAJ2000,_DEJ2000,z,Rich,BMtype&z=%3E0&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_7110
+#Name: VII/110A
+#Title: Rich Clusters of Galaxies (Abell+ 1989)
+#INFO	ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	creator=Abell G.O.	    First author or institution
+#INFO	cites=bibcode:1989ApJS...70....1A	    Article or Data origin sources
+#INFO	journal=ApJS	    Journal name
+#INFO	original_date=1989	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VII/110A	    Dataset landing page
+#INFO	publication_date=2012-11-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Coosys	B1950:	eq_FK4 B1950
+#Table	VII_110A_table5:
+#Name: VII/110A/table5
+#Title: Supplementary southern clusters
+#Column	ACOS	(I4)	[1,1174]+ "Abell" number for supplementary southern cluster	[ucd=meta.id]
+#Column	_RAJ2000	(F8.4)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F8.4)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	z	(F7.4)	? cluster redshift from Struble and Rood (1987ApJS...63..555S)	[ucd=src.redshift]
+#Column	Rich	(I1)	richness, from Abell (1958ApJS....3..211A)	[ucd=src.class.richness]
+#Column	BMtype	(a7)	[- I:?]! cluster classification in the Bautz-Morgan system	[ucd=src.class.struct]
+ACOS	_RAJ2000	_DEJ2000	z	Rich	BMtype
+ 	deg	deg	 	 	
+----	--------	--------	-------	-	-------
+   5	001.1615	-45.6216	 0.0395	0	II
+   6	001.1882	-30.4883	 0.0270	0	I
+  41	006.3715	-33.0232	 0.0498	0	II
+  45	006.4198	-56.9732	 0.0241	0	II
+  63	008.9614	-52.1914	 0.0417	0	II
+  74	011.4264	-49.9435	 0.0283	0	II
+  84	012.3327	-29.5277	 0.1100	0	I
+  85	012.4765	-47.3779	 0.0196	0	II
+ 109	014.3251	-30.9299	 0.0316	0	I-II
+ 112	014.6034	-66.8136	 0.0321	0	II
+ 113	015.1550	-40.2309	 0.0545	0	I-II
+ 137	017.9586	-61.5348	 0.0263	0	I
+ 141	018.4368	-31.7521	 0.0206	0	I
+ 182	025.8518	-36.3655	 0.0175	0	II
+ 222	031.4630	-50.7953	 0.1716	0	III
+ 230	032.9737	-47.8491	 0.2197	0	II-III
+ 239	034.1934	-47.8191	 0.0635	0	I
+ 250	035.5652	-51.1062	 0.0484	0	I-II
+ 261	036.2888	-63.2251	 0.0574	0	II
+ 274	037.7934	-57.9294	 0.0309	0	I-II
+ 283	038.8802	-50.3159	 0.0212	0	II
+ 301	042.4021	-31.1936	 0.0223	0	I
+ 303	042.1583	-71.3768	 0.0586	0	II
+ 311	043.5996	-66.4147	 0.0263	0	I-II
+ 315	044.7983	-51.0184	 0.0618	0	I
+ 316	045.0671	-37.0358	 0.0201	0	II
+ 324	047.4930	-47.3278	 0.0585	0	II
+ 329	048.1467	-49.6302	 0.0531	0	I-II
+ 336	049.3815	-44.7013	 0.0744	0	II
+ 338	049.5419	-52.2520	 0.0384	0	II
+ 339	049.8241	-53.8697	 0.0546	0	III
+ 346	050.5903	-49.3225	 0.0670	0	I-II
+ 353	051.5921	-51.4096	 0.0410	0	II
+ 366	053.7361	-53.5846	 0.0598	0	II
+ 367	053.8644	-45.1683	 0.0666	0	I-II
+ 372	054.3123	-55.4203	 0.0758	0	I-II
+ 373	054.6290	-35.4545	 0.0046	0	I
+ 377	055.1863	-55.2071	 0.0425	0	I-II
+ 390	056.7445	-54.0300	 0.0605	0	I-II
+ 393	057.0774	-45.5478	 0.0454	0	I
+ 399	058.6155	-53.8043	 0.0394	0	I-II
+ 404	059.0881	-53.8730	 0.0365	0	I
+ 411	060.1968	-64.9780	 0.0380	0	I-II
+ 412	060.4188	-56.8953	 0.0467	0	II-III
+ 413	060.6713	-63.7966	 0.0370	0	II
+ 416	061.2062	-43.8484	 0.0648	0	I-II
+ 424	061.9082	-43.4180	 0.0589	0	II
+ 433	063.6346	-50.7923	 0.0668	0	I
+ 461	067.0540	-50.5407	 0.0539	0	I-II
+ 463	067.2891	-53.8252	 0.0394	0	I-II

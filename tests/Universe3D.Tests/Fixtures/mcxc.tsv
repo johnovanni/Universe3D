@@ -1,0 +1,96 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:55 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:55	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/A%2BA/534/A109/mcxc&-out=MCXC,OName,AName,_RAJ2000,_DEJ2000,z,M500,R500,L500&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_35340109
+#Name: J/A+A/534/A109
+#Title: MCXC Meta-Catalogue X-ray galaxy Clusters (Piffaretti+, 2011)
+#INFO	ivoid=ivo://cds.vizier/j/a+a/534/a109	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/j/a+a/534/a109	    IVOID of underlying data collection
+#INFO	creator=Piffaretti R.	    First author or institution
+#INFO	cites=bibcode:2011A&A...534A.109P	    Article or Data origin sources
+#INFO	journal=A&A	    Journal name
+#INFO	original_date=2011	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/A+A/534/A109	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.35340109	    Dataset identifier that can be used for citation
+#INFO	publication_date=2017-09-19	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_A_A_534_A109_mcxc:
+#Name: J/A+A/534/A109/mcxc
+#Title: MCXC catalogue (table2 of the paper)
+#Column	MCXC	(A12)	MCXC name (JHHMM.m+DDMM)	[ucd=meta.id;meta.main]
+#Column	OName	(a18)	Other name	[ucd=meta.id]
+#Column	AName	(a54)	Alternative name	[ucd=meta.id]
+#Column	_RAJ2000	(F10.6)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F10.6)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	z	(F7.4)	Redshift	[ucd=src.redshift]
+#Column	M500	(F7.4)	Total mass (1)	[ucd=phys.mass]
+#Column	R500	(F7.4)	Characteristic radius (1)	[ucd=phys.size.radius]
+#Column	L500	(F9.6)	X-ray luminosity in 10^44^erg/s (1)	[ucd=phys.luminosity;em.X-ray]
+MCXC	OName	AName	_RAJ2000	_DEJ2000	z	M500	R500	L500
+ 	 	 	deg	deg	 	10+14Msun	Mpc	10+37W
+------------	------------------	------------------------------------------------------	----------	----------	-------	-------	-------	---------
+J0000.1+0816	RXC J0000.1+0816  	UGC 12890                                             	000.029583	 +8.274444	 0.0396	 0.7373	 0.6296	 0.196280
+J0000.4-0237	RXC J0000.4-0237  	                                                      	000.102917	 -2.625000	 0.0379	 0.3297	 0.4817	 0.052338
+J0001.6-1540	RXC J0001.6-1540  	                                                      	000.412500	-15.681111	 0.1246	 1.6557	 0.8021	 0.814902
+J0001.9+1204	RXC J0001.9+1204  	A2692                                                 	000.487500	+12.073056	 0.2033	 2.6927	 0.9178	 1.990205
+J0003.1-0605	RXCJ0003.1-0605   	A2697                                                 	000.799167	 -6.086111	 0.2320	 5.2188	 1.1326	 6.107094
+J0003.2-3555	RXCJ0003.2-3555   	A2717                                                 	000.800417	-35.927222	 0.0490	 1.2016	 0.7388	 0.441862
+J0003.8+0203	RXCJ0003.8+0203   	A2700                                                 	000.960833	 +2.063333	 0.0924	 1.7342	 0.8233	 0.846881
+J0004.9+1142	RXC J0004.9+1142  	UGC 00032                                             	001.247500	+11.700556	 0.0761	 1.3009	 0.7520	 0.518795
+J0005.3+1612	RXC J0005.3+1612  	A2703                                                 	001.344167	+16.210556	 0.1164	 2.4929	 0.9218	 1.579007
+J0006.0-3443	RXCJ0006.0-3443   	A2721                                                 	001.512500	-34.724167	 0.1147	 2.7122	 0.9486	 1.809494
+J0006.3+1052	RXC J0006.3+1052  	ZwCl15                                                	001.590417	+10.867778	 0.1698	 2.9941	 0.9621	 2.272747
+J0008.9+4110	ZwCl28            	ZwCl28                                                	002.237083	+41.176944	 0.1537	 2.8963	 0.9569	 2.110832
+J0009.7-3516	MS0007.2-3532     	                                                      	002.443750	-35.275000	 0.0500	 0.8728	 0.6639	 0.261854
+J0011.3-2851	RXCJ0011.3-2851   	A2734                                                 	002.836250	-28.855000	 0.0620	 2.0611	 0.8807	 1.086002
+J0011.7-1523	MACSJ0011.7-1523  	                                                      	002.928333	-15.389444	 0.3780	 7.2000	 1.1900	 8.900000
+J0011.7+3225	RXC J0011.7+3225  	A0007                                                 	002.935000	+32.416944	 0.1073	 3.3785	 1.0232	 2.571958
+J0013.6-1930	RXCJ0013.6-1930   	A0013                                                 	003.409583	-19.502222	 0.0940	 2.1818	 0.8883	 1.236332
+J0014.3-6604	RXCJ0014.3-6604   	A2746                                                 	003.576667	-66.077500	 0.1599	 3.4455	 1.0117	 2.827248
+J0014.3-3023	RXCJ0014.3-3023   	A2744                                                 	003.578333	-30.383333	 0.3066	 7.3614	 1.2359	11.818114
+J0014.3+0854	MS0011.7+0837     	                                                      	003.582500	 +8.900000	 0.1630	 2.7218	 0.9342	 1.927804
+J0015.4-2350	RXCJ0015.4-2350   	A0014                                                 	003.850000	-23.845000	 0.0645	 0.9884	 0.6888	 0.326305
+J0015.9+1614	MS0013.4+1558     	                                                      	003.982917	+16.249444	 0.0830	 0.9638	 0.6790	 0.319693
+J0016.3-3121	RXC J0016.3-3121  	A2751                                                 	004.082500	-31.365278	 0.0805	 1.2607	 0.7431	 0.495174
+J0016.7+0646	RXC J0016.7+0646  	A0016                                                 	004.189583	 +6.773611	 0.0833	 0.9629	 0.6787	 0.319327
+J0017.5-3509	RXCJ0017.5-3509   	A2755                                                 	004.390417	-35.165000	 0.0968	 1.5291	 0.7883	 0.692442
+J0018.5+1626	MACSJ0018.5+1626  	CL 0016+1609                                          	004.640833	+16.438056	 0.5456	 7.7847	 1.1477	17.911453
+J0019.0-2026	RXC J0019.0-2026  	S0026                                                 	004.766250	-20.438056	 0.2773	 4.7634	 1.0807	 5.571336
+J0019.6+2517	RXC J0019.6+2517  	                                                      	004.912917	+25.290833	 0.1353	 2.3266	 0.8951	 1.441768
+J0020.1+0005	RXC J0020.1+0005  	                                                      	005.044583	 +0.091667	 0.2124	 1.3975	 0.7352	 0.686609
+J0020.5-4913	RXC J0020.5-4913  	A2764                                                 	005.142083	-49.227778	 0.0711	 0.8730	 0.6595	 0.268194
+J0020.6+2840	RXC J0020.6+2840  	A0021                                                 	005.170417	+28.675000	 0.0940	 2.3890	 0.9156	 1.434697
+J0020.7-2542	RXCJ0020.7-2542   	A0022                                                 	005.178333	-25.710278	 0.1410	 3.5275	 1.0263	 2.872451
+J0021.5+2803	RXC J0021.5+2803  	IV Zw 015                                             	005.399583	+28.051389	 0.0948	 1.8782	 0.8448	 0.967910
+J0022.0+0422	WARP J0022.0+0422 	GHO 00190.5+0405                                      	005.514167	 +4.377222	 0.4070	 1.0815	 0.6277	 0.581659
+J0023.1+0421	WARP J0023.1+0421 	                                                      	005.775000	 +4.353611	 0.4530	 1.2496	 0.6469	 0.784758
+J0024.0-1704	RXC J0024.0-1704  	A2768                                                 	006.015000	-17.075556	 0.1890	 2.2757	 0.8722	 1.483752
+J0024.5+3312	RXC J0024.5+3312  	                                                      	006.132500	+33.208611	 0.2260	 3.3939	 0.9834	 2.992847
+J0025.4-1222	MACSJ0025.4-1222  	                                                      	006.372500	-12.376944	 0.5843	 4.6232	 0.9500	 8.041877
+J0025.5-3302	RXCJ0025.5-3302   	S0041                                                 	006.385000	-33.047222	 0.0491	 1.2872	 0.7559	 0.494670
+J0026.7+0501	WARP J0026.7+0501 	GHO 0024+0444                                         	006.699167	 +5.023889	 0.2529	 0.8595	 0.6162	 0.325648
+J0027.3-5015	RXCJ0027.3-5015   	A2777                                                 	006.838750	-50.251111	 0.1448	 2.9603	 0.9668	 2.164603
+J0027.8+2616	RXC J0027.8+2616  	RXJ0027.6+2616                                        	006.957500	+26.273889	 0.3668	 5.6843	 1.1083	 8.375561
+J0028.6-2338	RXCJ0028.6-2338   	A0042                                                 	007.163750	-23.637222	 0.1120	 2.3285	 0.9024	 1.404549
+J0029.0+0742	MS0026.4+0725     	                                                      	007.255417	 +7.703333	 0.1700	 1.6530	 0.7892	 0.858176
+J0029.8+1330	BVH2007 1         	                                                      	007.460833	+13.503889	 0.2510	 1.5110	 0.7442	 0.819400
+J0030.5+2618	BVH2007 2         	VMF98 1                                               	007.640000	+26.304444	 0.5000	 2.6037	 0.8112	 2.790358
+J0030.6-2410	RXC J0030.6-2410  	A0047                                                 	007.656667	-24.181389	 0.1382	 1.6278	 0.7938	 0.805310
+J0034.2-0204	RXC J0034.2-0204  	SH518                                                 	008.557917	 -2.075278	 0.0822	 2.1930	 0.8933	 1.230023
+J0034.6-0208	RXCJ0034.6-0208   	                                                      	008.650000	 -2.140000	 0.0812	 2.2202	 0.8972	 1.253723
+J0035.4-2015	MACSJ0035.4-2015  	                                                      	008.859167	-20.262778	 0.3520	10.2000	 1.3500	11.900000
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/A%2BA/534/A109/mcxc&-out=MCXC,OName,AName,_RAJ2000,_DEJ2000,z,M500,R500,L500&-c=194.95%2B27.98&-c.rm=10&-out.max=50
+J1259.7+2756	RXC J1259.7+2756  	Coma                                                  	194.929583	+27.938611	 0.0231	 4.2846	 1.1378	 3.455556
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/A%2BA/534/A109/mcxc&-out=MCXC,OName,AName,_RAJ2000,_DEJ2000,z,M500,R500,L500&-c=187.70%2B12.39&-c.rm=30&-out.max=50
+J1230.7+1220	Virgo             	Virgo                                                 	187.697083	+12.336944	 0.0036	 1.2092	 0.7508	 0.425069

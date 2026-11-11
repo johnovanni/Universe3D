@@ -1,0 +1,91 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:55 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:55	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/110A/table3&-out=ACO,_RAJ2000,_DEJ2000,z,Rich,BMtype&z=%3E0&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_7110
+#Name: VII/110A
+#Title: Rich Clusters of Galaxies (Abell+ 1989)
+#INFO	ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/vii/110a	    IVOID of underlying data collection
+#INFO	creator=Abell G.O.	    First author or institution
+#INFO	cites=bibcode:1989ApJS...70....1A	    Article or Data origin sources
+#INFO	journal=ApJS	    Journal name
+#INFO	original_date=1989	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/VII/110A	    Dataset landing page
+#INFO	publication_date=2012-11-12	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Coosys	B1950:	eq_FK4 B1950
+#Table	VII_110A_table3:
+#Name: VII/110A/table3
+#Title: Revised northern "Abell Catalog"
+#Column	ACO	(I4)	[1,2712]+ "Abell" number	[ucd=meta.id;meta.main]
+#Column	_RAJ2000	(F8.4)	Right ascension (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.ra]
+#Column	_DEJ2000	(F8.4)	Declination (FK5, Equinox=J2000.0) (computed by VizieR, not part of the original data. The format may include more digits than the original data because of internal accuracy requirements in VizieR and across other CDS services)	[ucd=pos.eq.dec]
+#Column	z	(F7.4)	? cluster redshift from Struble and Rood (1987ApJS...63..555S)	[ucd=src.redshift]
+#Column	Rich	(I1)	richness, from Abell (1958ApJS....3..211A)	[ucd=src.class.richness]
+#Column	BMtype	(a7)	[- I:] cluster classification in the Bautz- Morgan system	[ucd=src.class.struct]
+ACO	_RAJ2000	_DEJ2000	z	Rich	BMtype
+ 	deg	deg	 	 	
+----	--------	--------	-------	-	-------
+   1	001.8930	+16.5116	 0.1249	1	III
+   7	002.9237	+32.4113	 0.1073	1	II-III
+  14	003.8082	-23.8888	 0.0640	0	III:
+  15	003.8074	-26.0221	 0.1210	0	II-III
+  16	004.1929	 +6.7444	 0.0838	2	III:
+  21	005.1284	+28.6273	 0.0948	1	I:
+  22	005.1793	-25.7059	 0.1432	3	I
+  23	005.4403	 -0.8894	 0.1052	0	
+  24	005.6267	+23.2938	 0.1338	2	III
+  31	006.7787	+22.6266	 0.1596	2	II-III
+  41	007.1952	 +7.8430	 0.2750	3	II-III
+  42	007.1511	-23.6403	 0.1087	3	I
+  43	007.2262	+17.5763	 0.1114	0	III:
+  44	007.3979	+12.0262	 0.0559	1	II
+  46	007.5576	-12.8738	 0.1500	1	II-III
+  71	009.4406	+29.5915	 0.0724	0	III
+  75	009.9587	+21.2577	 0.0626	0	
+  76	009.9461	 +6.7744	 0.0416	0	II-III
+  77	010.1424	+29.5242	 0.0719	1	I:
+  79	010.1561	+18.1409	 0.0927	1	III
+  84	010.4598	+21.4073	 0.1030	1	II:
+  85	010.4076	 -9.3426	 0.0518	1	I
+  86	010.6206	-21.7928	 0.0610	0	
+  88	010.7160	-26.0429	 0.1086	1	III
+  95	011.4648	 -0.8602	 0.1115	1	II-III:
+  96	011.6103	+39.5063	 0.1344	1	I-II
+  98	011.6109	+20.4896	 0.1050	3	II-III:
+ 102	012.1669	 +1.3724	 0.0632	0	II-III
+ 104	012.4422	+24.5221	 0.0822	1	II-III:
+ 114	013.4154	-21.6789	 0.0566	0	
+ 115	013.9980	+26.3204	 0.1971	3	III
+ 116	013.9663	 +0.6372	 0.0665	0	
+ 117	014.0039	-10.0295	 0.0535	0	
+ 119	014.0891	 -1.2630	 0.0440	1	II-III
+ 121	014.3822	 -7.0133	 0.1048	1	III
+ 125	015.0335	+14.2692	 0.1880	1	III
+ 133	015.6610	-21.7982	 0.0604	0	
+ 134	015.7622	 -2.5317	 0.0699	0	
+ 136	016.0257	+25.0679	 0.1569	2	I
+ 140	016.1317	-23.9655	 0.1520	3	II:
+ 141	016.4051	-24.5992	 0.2300	3	III
+ 147	017.0435	 +2.1666	 0.0438	0	III
+ 150	017.3095	+13.1662	 0.0596	1	I-II
+ 151	017.2182	-15.4170	 0.0526	1	II:
+ 154	017.7420	+17.6656	 0.0658	1	II
+ 158	017.9410	+16.8820	 0.0645	0	
+ 160	018.2142	+15.5149	 0.0447	0	III
+ 166	018.6399	-16.2691	 0.1156	1	III:
+ 168	018.7909	 +0.2473	 0.0452	2	II-III:
+ 171	019.1917	+16.2634	 0.0706	0	I
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/110A/table3&-out=ACO,_RAJ2000,_DEJ2000,z,Rich,BMtype&z=%3E0&-c=194.95%2B27.98&-c.rm=10&-out.max=50
+1656	194.9531	+27.9808	 0.0232	2	II

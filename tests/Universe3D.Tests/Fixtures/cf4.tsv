@@ -1,0 +1,94 @@
+#
+#   VizieR Astronomical Server vizier.cfa.harvard.edu
+#    Date: 2026-11-11T14:04:54 [V7.6.1]
+#   In case of problem, please report to:	cds-question@unistra.fr
+#
+#
+#Coosys	J2000:	eq_FK5 J2000
+#INFO	service_protocol=ASU	  IVOID of the protocol through which the data was retrieved
+#INFO	request_date=2026-11-11T14:04:54	  Query execution date
+#INFO	request=https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJ/944/94/table2&-out=PGC,RAJ2000,DEJ2000,DM,Vcmb&-out.max=50	  Full request URL
+#INFO	contact=cds-question@unistra.fr	  Email or URL to contact publisher
+#INFO	server_software=VizieR/7.6.1	  Software version
+#INFO	publisher=CDS	  Data centre that produced the VOTable
+
+#RESOURCE=yCat_19440094
+#Name: J/ApJ/944/94
+#Title: Cosmicflows-4 (Tully+, 2023)
+#INFO	ivoid=ivo://cds.vizier/j/apj/944/94	    IVOID of underlying data collection
+#INFO	data_ivoid=ivo://cds.vizier/j/apj/944/94	    IVOID of underlying data collection
+#INFO	creator=Tully R.B.	    First author or institution
+#INFO	cites=bibcode:2023ApJ...944...94T	    Article or Data origin sources
+#INFO	journal=ApJ	    Journal name
+#INFO	original_date=2023	    Year of the article publication
+#INFO	reference_url=https://cdsarc.cds.unistra.fr/viz-bin/cat/J/ApJ/944/94	    Dataset landing page
+#INFO	citation=doi:10.26093/cds/vizier.19440094	    Dataset identifier that can be used for citation
+#INFO	publication_date=2025-05-21	    Date of first publication in the data centre
+#INFO	rights_uri=https://cds.unistra.fr/vizier-org/licences_vizier.html	    Licence URI
+#Table	J_ApJ_944_94_table2:
+#Name: J/ApJ/944/94/table2
+#Title: Distances of individual galaxies
+#Column	PGC	(I7)	[2/9003288] Principal Galaxies Catalog ID (1)	[ucd=meta.id;meta.main]
+#Column	RAJ2000	(F8.4)	Right Ascension, decimal degree (J2000)	[ucd=pos.eq.ra;meta.main]
+#Column	DEJ2000	(F8.4)	[-90/89] Declination, decimal degree (J2000)	[ucd=pos.eq.dec;meta.main]
+#Column	DM	(F6.3)	[18.46/39.53] Distance modulus, all methodologies (3)	[ucd=phot.mag.distMod]
+#Column	Vcmb	(I5)	[-784/32575] Systemic velocity of the galaxy (2)	[ucd=phys.veloc;pos.cmb]
+PGC	RAJ2000	DEJ2000	DM	Vcmb
+ 	deg	deg	mag	km/s
+-------	--------	--------	------	-----
+      2	000.0070	+47.2745	34.535	 4726
+      4	000.0144	+23.0876	33.495	 4109
+     12	000.0358	-06.3739	34.995	 6195
+     16	000.0471	-05.1587	34.655	 5312
+     35	000.0938	+39.4955	29.730	   34
+     55	000.1558	+33.6009	34.245	 4454
+     64	000.2180	-35.8436	36.606	15324
+     66	000.2215	-35.9863	36.276	14725
+     68	000.2306	-18.9589	34.735	 7338
+     70	000.2336	+20.3380	35.325	 6447
+     76	000.2454	+28.9115	34.885	 6583
+     80	000.2698	+04.5406	35.675	 9151
+     92	000.3125	+13.1125	32.845	 5015
+     94	000.5037	+80.6417	34.025	 3995
+     96	000.2844	+06.3372	36.565	14380
+    102	000.3324	+34.5257	34.485	 4726
+    114	000.3922	-36.3167	35.496	14397
+    115	000.4386	-04.3469	36.246	14005
+    120	000.4097	+23.4836	34.995	 4371
+    123	000.4002	-14.7486	35.886	10966
+    124	000.4027	+03.5056	34.515	 5988
+    128	000.4231	+32.1078	36.035	12230
+    143	000.4926	-15.4609	24.902	 -437
+    145	000.4884	-27.9994	35.565	 9427
+    146	000.5133	+17.5739	34.295	 6004
+    155	000.5163	+12.5310	34.435	 7582
+    165	000.5959	+27.2106	34.725	 7280
+    171	000.5877	+77.2569	33.185	 2326
+    176	000.6452	-03.7108	34.995	 6109
+    179	000.6664	+08.7370	34.155	 5175
+    182	000.6837	-43.9672	35.836	11615
+    186	000.6932	+18.8863	35.255	 7539
+    196	000.7276	-35.7222	36.586	14365
+    201	000.7375	+04.2086	35.385	 8267
+    205	000.7737	-01.9139	35.065	 6910
+    212	000.7968	+15.9655	36.475	10872
+    216	000.8218	+03.6221	34.045	 7628
+    218	000.8121	+16.1456	30.660	  693
+    222	000.8274	+22.6417	35.515	 6774
+    224	000.8389	-50.0804	35.936	10147
+    226	000.8352	+08.6189	34.755	11584
+    247	000.9117	+11.4980	37.115	16978
+    250	000.8958	+23.2008	34.843	 6914
+    257	000.9335	+28.5557	35.225	 7612
+    258	000.9366	+04.2981	36.105	11205
+    259	000.9346	+16.1868	34.945	 6050
+    262	000.9528	-43.6183	35.436	 8795
+    265	000.9653	-50.7666	35.295	11708
+    279	000.9953	+20.7523	32.325	 1959
+    280	001.0051	-51.3941	35.105	10310
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJ/944/94/table2&-out=PGC,RAJ2000,DEJ2000,DM,Vcmb&-c=10.6847%2B41.2690&-c.rm=1&-out.max=50
+   2557	010.6848	+41.2689	24.366	 -585
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJ/944/94/table2&-out=PGC,RAJ2000,DEJ2000,DM,Vcmb&-c=187.7059%2B12.3911&-c.rm=1&-out.max=50
+  41361	187.7058	+12.3912	31.134	 1608
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/ApJ/944/94/table2&-out=PGC,RAJ2000,DEJ2000,DM,Vcmb&-c=11.8880-25.2880&-c.rm=1&-out.max=50
+   2789	011.8880	-25.2884	27.790	  -43
