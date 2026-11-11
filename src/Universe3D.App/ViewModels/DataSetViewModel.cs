@@ -1,5 +1,6 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Universe3D.App.Resources;
 using Universe3D.Core.Catalogs;
 using Universe3D.Core.Objects;
 using Universe3D.Core.Text;
@@ -14,24 +15,33 @@ public sealed partial class DataSetViewModel : ObservableObject
     public DataSetViewModel(DataSetKind kind)
     {
         Kind = kind;
-        (Number, Title, Description) = kind switch
+        string glossaryKeys;
+        (Number, Title, Description, glossaryKeys) = kind switch
         {
             DataSetKind.LocalVolume => (1, "Local Group & Local Volume",
-                "About 870 galaxies within about 85 million light-years, with measured distances (UNGC, McConnachie)."),
+                "About 870 galaxies within about 85 million light-years, with measured distances (UNGC, McConnachie).",
+                "LocalGroup MeasuredDistance"),
             DataSetKind.NearbyUniverse => (2, "Nearby universe",
-                "The 2MASS Redshift Survey: about 43,500 galaxies over the whole sky, out to about 2 billion light-years."),
+                "The 2MASS Redshift Survey: about 43,500 galaxies over the whole sky, out to about 2 billion light-years.",
+                "Redshift"),
             DataSetKind.Clusters => (3, "Galaxy clusters",
-                "Galaxy clusters found by their X-rays (MCXC) or by counting galaxies (Abell), with measured redshifts."),
+                "Galaxy clusters found by their X-rays (MCXC) or by counting galaxies (Abell), with measured redshifts.",
+                "Mcxc Abell"),
             DataSetKind.Quasars => (4, "Quasars & AGN",
-                "Quasars and other active galaxies from the Million Quasars catalog, out to the early universe."),
+                "Quasars and other active galaxies from the Million Quasars catalog, out to the early universe.",
+                "Quasar Agn"),
             _ => throw new ArgumentOutOfRangeException(nameof(kind)),
         };
+        ToolTip = Description + Environment.NewLine + Environment.NewLine + GlossaryExtension.Text(glossaryKeys);
     }
 
     public DataSetKind Kind { get; }
     public int Number { get; }
     public string Title { get; }
     public string Description { get; }
+
+    /// <summary>The description plus the Glossary texts of the terms in the entry (spec §5).</summary>
+    public string ToolTip { get; }
 
     [ObservableProperty]
     private string _summary = "Not loaded yet";

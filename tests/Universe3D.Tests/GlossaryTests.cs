@@ -15,6 +15,7 @@ public class GlossaryTests
             "MeasuredDistance", "CmbFrame", "Magnitude", "L500", "Richness", "BautzMorgan", "Mcxc", "Abell",
             "Elliptical", "Lenticular", "Spiral", "BarredSpiral", "Irregular", "DwarfSpheroidal", "DwarfIrregular",
             "PeculiarGalaxy", "Unclassified", "DiskTilt", "Diameter", "ScaleRings", "MilkyWay",
+            "LocalGroup", "QuasarLimit", "NoValidDistance",
         }.Select(k => new object[] { k });
 
     [Theory]

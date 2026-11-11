@@ -25,7 +25,7 @@
                     <TextBlock Text="{Binding DataSetStatus}" Style="{StaticResource Muted}" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding ObjectsStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"/>
                     <TextBlock Text="{Binding ExcludedStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
-                               ToolTip="Objects whose velocity gives no valid distance (for example a blueshift with no measured distance) cannot be placed in 3D."/>
+                               ToolTip="{res:Glossary NoValidDistance}"/>
                     <TextBlock Text="{Binding Warning}" Foreground="{StaticResource WarningBrush}" FontSize="11" Margin="16,0,0,0"
                                Visibility="{Binding Warning, Converter={StaticResource EmptyToCollapsed}}"/>
                 </StackPanel>
@@ -41,7 +41,7 @@
                     <ListBox x:Name="DataSetList" ItemsSource="{Binding DataSets}" SelectedItem="{Binding SelectedDataSet}">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <StackPanel ToolTip="{Binding Description}">
+                                <StackPanel ToolTip="{Binding ToolTip}">
                                     <TextBlock>
                                         <Run Text="{Binding Number, Mode=OneWay}" Foreground="{StaticResource MutedBrush}"/>
                                         <Run Text="  "/><Run Text="{Binding Title, Mode=OneWay}" FontWeight="SemiBold"/>
@@ -156,7 +156,7 @@
 
                     <Expander Header="Quasar limit" IsExpanded="True" DataContext="{Binding Filters}"
                               Visibility="{Binding IsQuasarLimitVisible, Converter={StaticResource BoolToVisibility}}"
-                              ToolTip="Show only the brightest quasars, by R magnitude (else B). Fewer is faster on slower graphics cards.">
+                              ToolTip="{res:Glossary QuasarLimit Quasar Agn Magnitude}">
                         <ListBox ItemsSource="{Binding QuasarLimitOptions}" SelectedValuePath="Count"
                                  SelectedValue="{Binding QuasarLimit}" DisplayMemberPath="Label"/>
                     </Expander>

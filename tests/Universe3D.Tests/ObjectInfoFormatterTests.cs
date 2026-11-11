@@ -1,6 +1,8 @@
+using Universe3D.Core.Coordinates;
 using Universe3D.Core.Cosmology;
 using Universe3D.Core.Morphology;
 using Universe3D.Core.Objects;
+using Universe3D.Core.Shapes;
 using Universe3D.Core.Text;
 
 namespace Universe3D.Tests;
@@ -46,6 +48,34 @@ public class ObjectInfoFormatterTests
         Assert.Contains(new InfoRow("Velocity arrow", "Line-of-sight motion only", "LineOfSightOnly"), rows);
         Assert.Contains("Sb", Row(rows, "Type").Value);
         Assert.Contains(rows, r => r.Value.Contains("tilt direction assumed", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// Ruling R35: the stated tilt direction must match <see cref="GalaxyOrientation.DiskNormal"/>. The disk's north
+    /// edge (the in-disk direction closest to sky north) lies farther from the Sun than the centre, so the text says
+    /// "away" and never "toward us".
+    /// </summary>
+    [Fact]
+    public void Info_TiltWordingMatchesDiskNormal()
+    {
+        var g = M31();
+        var normal = GalaxyOrientation.DiskNormal(g.RaDeg, g.DecDeg, g.PaDeg!.Value, g.InclinationDeg!.Value);
+        double ra = g.RaDeg * Math.PI / 180;
+        var s = SkyMath.UnitVector(g.RaDeg, g.DecDeg);
+        var east = new Vector3d(-Math.Sin(ra), Math.Cos(ra), 0);
+        var north = s.Cross(east);
+        var northEdge = (north - normal * north.Dot(normal)).Normalized(); // in the disk plane, toward sky north
+        Assert.True(northEdge.Dot(north) > 0);
+
+        var centre = g.PositionEq;
+        var edgePoint = centre + northEdge * 0.01; // 10 kpc out along the disk
+        Assert.True(edgePoint.Length > centre.Length, "the north edge is the far edge");
+
+        string tilt = Row(ObjectInfoFormatter.Format(g, Cosmo), "Disk tilt").Value;
+        Assert.Contains("north edge tilted away from us", tilt);
+        Assert.DoesNotContain("toward us", tilt);
+        Assert.Contains("tilted away from us", Glossary.Get("DiskTilt"));
+        Assert.DoesNotContain("toward us", Glossary.Get("DiskTilt"));
     }
 
     [Fact]

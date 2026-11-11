@@ -44,10 +44,13 @@ public static class Glossary
         ["DwarfIrregular"] = "A small galaxy with no clear shape, usually rich in gas and still forming stars.",
         ["PeculiarGalaxy"] = "A galaxy with an unusual, disturbed shape, often because it is colliding or merging with another galaxy.",
         ["Unclassified"] = "The source catalog gives no shape class for these galaxies, often because they are too faint or small in the survey images. They are drawn as plain disks.",
-        ["DiskTilt"] = "From a picture we can tell how tilted a galaxy's disk is, but not which edge is nearer to us. This program always tilts the disk's north side toward us, so the true tilt may be the mirror image.",
+        ["DiskTilt"] = "From a picture we can tell how tilted a galaxy's disk is, but not which edge is nearer to us. This program always draws the disk with its north edge tilted away from us, so the true tilt may be the mirror image.",
         ["Diameter"] = "The galaxy's size across, measured where its light fades to a standard faint level, converted to light-years using its distance.",
         ["ScaleRings"] = "Circles around the Sun at 1, 3, 10, 30, ... times a unit of light-years, drawn in the reference plane of the chosen coordinate system, to show the scale.",
         ["MilkyWay"] = "Our own galaxy, a barred spiral about 100,000 light-years across. The Sun is about 26,700 light-years from its center.",
+        ["LocalGroup"] = "The Local Group is the small family of about 100 galaxies that includes the Milky Way, Andromeda and Triangulum, spread over about 10 million light-years. The Local Volume adds the nearby galaxy groups around it, such as those of Centaurus A and M81.",
+        ["QuasarLimit"] = "Shows only the brightest quasars and active galaxies, chosen by their R magnitude (or B where R is missing). Fewer objects draw faster on slower graphics cards.",
+        ["NoValidDistance"] = "Objects that cannot be placed in 3D: they have no measured distance, and their velocity is zero or negative (approaching) both relative to the cosmic microwave background and relative to the Local Group, so their redshift gives no distance.",
         ["LineOfSightOnly"] = "A redshift or blueshift measures only motion toward or away from us, not sideways motion. So the arrow points along the line between the Sun and the object.",
     };
 

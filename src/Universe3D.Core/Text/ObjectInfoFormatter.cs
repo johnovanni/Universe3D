@@ -111,7 +111,7 @@ public static class ObjectInfoFormatter
                 disk ? "DiskTilt" : null));
         else if (disk)
             rows.Add(new("Disk tilt",
-                "Drawn with its north side toward us (tilt direction assumed: images cannot show which edge is nearer)",
+                "Drawn with its north edge tilted away from us (tilt direction assumed: images cannot show which edge is nearer)",
                 "DiskTilt"));
     }
 
