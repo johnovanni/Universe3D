@@ -72,6 +72,38 @@ public class BuilderTests
         Assert.Contains("NGC 224", m31.AltNames);
     }
 
+    [Theory]
+    [InlineData("SMC", "MCC:SMC")]
+    [InlineData("LMC", "MCC:LMC")]
+    [InlineData("M 31", "MCC:Andromeda")]
+    [InlineData("Sagittarius dSph", "MCC:Sagittarius dSph")]
+    public async Task LocalVolume_LargeGalaxiesMergeOnce(string designation, string expectedId)
+    {
+        var ds = await Build(new LocalVolumeBuilder());
+        var matches = ds.Objects.OfType<Galaxy>()
+            .Where(g => g.Name == designation || g.AltNames.Contains(designation)
+                        || (designation == "Sagittarius dSph" && g.Id.EndsWith("Sag dSph", StringComparison.Ordinal)))
+            .ToList();
+        var g = Assert.Single(matches);
+        Assert.Equal(expectedId, g.Id);
+        Assert.Contains("UNGC", g.Sources);
+        Assert.DoesNotContain(ds.Objects, o => o.Id is "UNGC:SMC" or "UNGC:LMC" or "UNGC:MESSIER031" or "UNGC:Sag dSph");
+    }
+
+    [Fact]
+    public async Task LocalVolume_NoDuplicateNamesOrPositions()
+    {
+        var ds = await Build(new LocalVolumeBuilder());
+        var gals = ds.Objects.OfType<Galaxy>().ToList();
+        Assert.Empty(gals.GroupBy(g => CommonNames.MatchKeys(g.Name).FirstOrDefault() ?? g.Name).Where(x => x.Count() > 1)
+            .Select(x => x.Key));
+        for (int i = 0; i < gals.Count; i++)
+            for (int j = i + 1; j < gals.Count; j++)
+                Assert.True(
+                    Universe3D.Core.Coordinates.SkyMath.AngularSeparationDeg(gals[i].RaDeg, gals[i].DecDeg, gals[j].RaDeg, gals[j].DecDeg) * 3600 > 30,
+                    $"{gals[i].Id} and {gals[j].Id} are within 30 arcsec");
+    }
+
     [Fact]
     public async Task LocalVolume_UngcOnlyGalaxy_UsesUngcDistance()
     {

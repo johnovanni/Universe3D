@@ -1,3 +1,4 @@
+using Universe3D.Core.Coordinates;
 using Universe3D.Core.Cosmology;
 using Universe3D.Core.Morphology;
 using Universe3D.Core.Objects;
@@ -7,7 +8,7 @@ namespace Universe3D.Core.Catalogs;
 
 /// <summary>
 /// Local Group and Local Volume: UNGC (Karachentsev+ 2013) merged with McConnachie 2012, which wins for galaxies
-/// matched within 60″. HyperLEDA fills in PA, axis ratio, diameter and morphology where both lack them.
+/// matched by name or by position (60″, or a quarter of the larger diameter). HyperLEDA fills in PA, axis ratio, diameter and morphology where both lack them.
 /// </summary>
 public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDataSetBuilder
 {
@@ -38,7 +39,7 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
         progress?.Report("Building the Local Volume…");
 
         var ledaIndex = Index(leda, "_RAJ2000", "_DEJ2000", MatchArcsec);
-        var ungcIndex = Index(ungc, "_RAJ2000", "_DEJ2000", MatchArcsec);
+        var ungcFor = MatchToUngc(mcc, ungc);
         var ungcTaken = new bool[ungc.Count];
         var inputs = new List<GalaxyInput>();
         int skipped = 0, merged = 0;
@@ -46,11 +47,11 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
         for (int i = 0; i < mcc.Count; i++)
         {
             if (Position(mcc, i, "_RAJ2000", "_DEJ2000") is not { } pos) { skipped++; continue; }
-            int u = ungcIndex.FindNearest(pos.Ra, pos.Dec);
-            if (u >= 0 && ungcTaken[u]) u = -1;
+            int u = ungcFor[i];
             var input = FromMcConnachie(mcc, i, pos, ungc, u, leda, ledaIndex.FindNearest(pos.Ra, pos.Dec));
+            if (input == null) { skipped++; continue; }
             if (u >= 0) { ungcTaken[u] = true; merged++; }
-            if (input == null) skipped++; else inputs.Add(input);
+            inputs.Add(input);
         }
 
         for (int i = 0; i < ungc.Count; i++)
@@ -72,6 +73,45 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
         string summary = $"{UngcName} ({UngcSource}): {ungc.Count} rows; {MccName} ({MccSource}): {mcc.Count} rows, " +
                          $"{merged} merged with UNGC; HyperLEDA ({HyperLedaSource}): {leda.Count} rows";
         return new DataSet(Kind, objects, excluded, skipped, DateTime.UtcNow, summary);
+    }
+
+    /// <summary>
+    /// The UNGC row each McConnachie row is the same object as, or -1. Candidate pairs are name matches (best) or
+    /// positions within max(60″, 0.25 × the UNGC a26 diameter); they are taken best-first, each UNGC row at most
+    /// once, so a second-nearest candidate is used when the nearest is already taken.
+    /// </summary>
+    internal static int[] MatchToUngc(TsvTable mcc, TsvTable ungc)
+    {
+        var ungcKeys = new HashSet<string>[ungc.Count];
+        for (int u = 0; u < ungc.Count; u++) ungcKeys[u] = [.. CommonNames.MatchKeys(ungc.Get(u, "Name"))];
+
+        var pairs = new List<(int Rank, double Sep, int M, int U)>();
+        for (int m = 0; m < mcc.Count; m++)
+        {
+            if (Position(mcc, m, "_RAJ2000", "_DEJ2000") is not { } mp) continue;
+            var mKeys = CommonNames.MatchKeys(mcc.Get(m, "Name"));
+            for (int u = 0; u < ungc.Count; u++)
+            {
+                double sep = double.PositiveInfinity;
+                if (Position(ungc, u, "_RAJ2000", "_DEJ2000") is { } up)
+                    sep = SkyMath.AngularSeparationDeg(mp.Ra, mp.Dec, up.Ra, up.Dec) * 3600;
+                bool sameName = mKeys.Any(ungcKeys[u].Contains);
+                double tol = Math.Max(MatchArcsec, 0.25 * (ungc.GetDouble(u, "a26") ?? 0) * 60);
+                if (sameName) pairs.Add((0, double.IsInfinity(sep) ? 0 : sep, m, u));
+                else if (sep <= tol) pairs.Add((1, sep, m, u));
+            }
+        }
+
+        var result = new int[mcc.Count];
+        Array.Fill(result, -1);
+        var taken = new bool[ungc.Count];
+        foreach (var (_, _, m, u) in pairs.OrderBy(p => p.Rank).ThenBy(p => p.Sep))
+        {
+            if (result[m] >= 0 || taken[u]) continue;
+            result[m] = u;
+            taken[u] = true;
+        }
+        return result;
     }
 
     /// <summary>

@@ -62,4 +62,26 @@ public static class CommonNames
             return string.Create(CultureInfo.InvariantCulture, $"Abell {int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture)}");
         return s;
     }
+
+    /// <summary>
+    /// Comparison keys of a catalog name: the normalised designation without spaces, brackets or underscores
+    /// (so "Leo I", "LeoI" and "Bootes (I)" / "BootesI" agree), plus the NGC equivalent of a Messier object and
+    /// vice versa. Two names refer to the same object when their key sets intersect.
+    /// </summary>
+    public static IReadOnlyList<string> MatchKeys(string? raw)
+    {
+        var keys = new List<string>(2);
+        if (string.IsNullOrWhiteSpace(raw)) return keys;
+        string n = NormalizeDesignation(raw);
+        keys.Add(Squash(n));
+        if (n.StartsWith("M ", StringComparison.Ordinal) && Messier.TryGetValue("M" + n[2..], out var ngc))
+            keys.Add(Squash(ngc));
+        else
+            foreach (var kv in Messier)
+                if (kv.Value == n) { keys.Add(Squash(kv.Key)); break; }
+        return keys;
+    }
+
+    private static string Squash(string s) =>
+        new string(s.Where(char.IsLetterOrDigit).ToArray()).ToUpperInvariant();
 }

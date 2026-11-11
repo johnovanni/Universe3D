@@ -43,6 +43,17 @@ public class KnownObjectTests
     }
 
     [Fact]
+    public void LocalVolume_NoDuplicates()
+    {
+        var ds = Load(DataSetKind.LocalVolume);
+        var galaxies = ds.Objects.OfType<Galaxy>().ToList();
+        Assert.Empty(galaxies.GroupBy(g => CommonNames.MatchKeys(g.Name).FirstOrDefault() ?? g.Name)
+            .Where(x => x.Count() > 1).Select(x => x.Key));
+        Assert.Single(galaxies, g => g.Name == "Small Magellanic Cloud");
+        Assert.Single(galaxies, g => g.Name == "Large Magellanic Cloud");
+    }
+
+    [Fact]
     public void NearbyUniverse_M87()
     {
         var ds = Load(DataSetKind.NearbyUniverse);
