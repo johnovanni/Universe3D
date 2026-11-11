@@ -82,4 +82,13 @@ public class DistanceResolverTests
         Assert.Null(res.PeculiarKms);
         Assert.Equal(Cosmo.LookbackTimeGyr(1.0), res.LookbackGyr, 9);
     }
+
+    [Fact]
+    public void Resolver_MeasuredLookbackUsesDistanceNotObservedRedshift()
+    {
+        var res = _r.Resolve(10.68, 41.27, 0.77, "UNGC", -300, null)!;
+        double expected = Cosmo.LookbackTimeGyr(Cosmo.RedshiftAtComovingDistance(0.77));
+        Assert.True(res.LookbackGyr > 0);
+        Assert.Equal(expected, res.LookbackGyr, 1e-12);
+    }
 }

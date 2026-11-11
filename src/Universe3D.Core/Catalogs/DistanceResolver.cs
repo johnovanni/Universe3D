@@ -26,10 +26,13 @@ public sealed class DistanceResolver(CosmologyModel cosmo)
 
         if (measuredMpc is { } d && IsFinite(d) && d > 0)
         {
-            double zRef = Math.Max(0, zEff ?? cosmo.RedshiftAtComovingDistance(d));
-            double? pec = vCmb is { } v ? RedshiftMath.PeculiarVelocity(v, d, zRef) : null;
+            double zDistance = cosmo.RedshiftAtComovingDistance(d);
+            // Gate for the linear Hubble law (z >= 0.1): observed z when known, else the distance-implied z.
+            double zGate = zEff ?? zDistance;
+            double? pec = vCmb is { } v ? RedshiftMath.PeculiarVelocity(v, d, zGate) : null;
+            // R8: look-back is the light-travel time implied by the distance, never the observed z.
             return new ResolvedDistance(d, DistanceSource.Measured, measuredCatalog ?? "", vCmb, pec,
-                cosmo.LookbackTimeGyr(zRef));
+                cosmo.LookbackTimeGyr(zDistance));
         }
 
         if (cz is not { } czVal || zEff is not { } zObs) return null;
