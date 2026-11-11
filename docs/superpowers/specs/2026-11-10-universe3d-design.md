@@ -1,7 +1,7 @@
 # Universe3D — Design
 
 **Date:** 2026-11-10
-**Status:** Approved in conversation; awaiting review of this written spec
+**Status:** Revised after spec review (system requirements, velocity arrows); awaiting final approval
 **Sibling project:** SolarSystem3D (`C:\repos\SolarSystem3D`). Universe3D follows its patterns where they fit
 (MVVM, built-in catalog snapshot plus a "Download latest" option, the 2D label overlay, and accuracy tests
 against reference data).
@@ -19,17 +19,41 @@ and learning, with astronomically correct positions; it is not a research tool.
 - The same interaction as SolarSystem3D: zoom, rotate and pan. Plus a setting for maximum distance.
 - A list box (or similar) that selects **one data set**, which the program then displays.
 - Galaxies drawn as **shapes when zoomed in** and as dots when far away.
+- An option to show redshift/blueshift as a **fine red or blue arrow** on each object, pointing in the direction
+  of its velocity, with length set by the size of the redshift or blueshift (§3, "Velocity arrows").
+- No dependence on one particular computer: the spec states **minimum and recommended** systems.
 - Graphics: **OpenTK + GLWpfControl** (chosen over Helix's SharpDX variant, which depends on SharpDX, unmaintained since 2018).
 
 ### Assumptions (confirmed through the approved design)
 - "Accurate" means: measured distances where they exist, cosmologically correct distances otherwise.
-- Target machine: Lenovo 82HT, Intel Core i7‑1165G7, Intel Iris Xe graphics, 16 GB RAM, a 1920×1080 laptop
-  screen, plus two DisplayLink USB monitors.
+- It runs on ordinary Windows PCs and laptops, including those with integrated graphics. The development machine
+  (Core i7‑1165G7, Iris Xe, 16 GB) is a "recommended" class system and is used for measuring performance.
+
+### System requirements
+
+| | Minimum | Recommended |
+|---|---|---|
+| OS | Windows 10 (22H2) or Windows 11, 64-bit | Windows 11, 64-bit |
+| Runtime | .NET 8 Desktop Runtime | same |
+| GPU | **OpenGL 4.1** with current drivers. Examples: Intel UHD Graphics 620 (8th-gen Core, 2017), AMD Radeon Vega 8, NVIDIA GeForce MX150 / GTX 950 | Intel Iris Xe (11th-gen Core, 2020) or AMD Radeon 680M, or any dedicated GPU from the last ~8 years |
+| CPU | 64-bit, 2 cores | 4 cores |
+| RAM | 8 GB | 16 GB |
+| Display | 1366×768 | 1920×1080 or larger |
+| Disk | 300 MB (app + built-in snapshots) | plus ~500 MB if every catalog is downloaded |
+| Network | Only for "Download latest" | same |
+
+- Below the recommended class, the app lowers the **quasar limit** default to 100,000 and the **galaxy-shape cap**
+  to 5,000 (both still adjustable). Detection uses the OpenGL renderer string and a short frame-time measurement
+  at startup.
+- **USB display adapters** (DisplayLink and similar) run every frame through the CPU and some reject OpenGL
+  windows. The app works on them where possible, but they don't count toward the requirements. The status bar says
+  when the window is on such a display.
 
 ### Success criteria
 1. All four data sets load offline from built-in snapshots, and each can be refreshed from VizieR.
-2. Galaxy and cluster data sets run at ≥ 50 fps on the laptop screen. Quasars run at ≥ 30 fps with 250,000 shown
-   and stay usable (≥ 20 fps) with all of them.
+2. On a **recommended** system's built-in display: galaxy and cluster data sets run at ≥ 50 fps. Quasars run at
+   ≥ 30 fps with 250,000 shown and stay usable (≥ 20 fps) with all of them. On a **minimum** system: every data set
+   runs at ≥ 25 fps with the reduced defaults.
 3. Known objects come out right (see §8): Andromeda, M87/Virgo, Coma, 3C 273, cosmology reference values,
    and supergalactic coordinates.
 4. Clicking any object shows its name, type, shape, redshift/blueshift, velocity, distance (light-years, Mpc
@@ -86,6 +110,29 @@ Rules and limits:
 - For galaxies with a measured distance, the panel also shows **peculiar velocity**:
   `v_pec ≈ v_CMB − H₀·d`, using the Cosmicflows‑4 convention, at low z only (z < 0.1).
 
+### Velocity arrows (optional display)
+- With **Show velocity arrows** on, each visible object gets a fine arrow: **red** for redshift (receding) and
+  **blue** for blueshift (approaching).
+- **Direction:** a redshift or blueshift measures only the *radial* velocity, along our line of sight; sideways
+  motion is invisible in it. So the arrow points **along the line from the Sun to the object**:
+  - outward (away from the Sun) when receding,
+  - inward (toward the Sun) when approaching.
+
+  This is shown truthfully rather than inventing a 3D velocity. The info panel says "arrow shows line-of-sight
+  motion only".
+- **Arrow mode**, a selector:
+  - **Observed** (default): the measured redshift or blueshift (heliocentric cz, or z for distant objects). This is
+    almost all red beyond the Local Group, because the universe is expanding.
+  - **Peculiar**: the radial peculiar velocity `v_pec ≈ v_CMB − H₀·d`, with the expansion of the universe removed.
+    Only objects with a measured distance get an arrow (data sets 1–2). This mode shows galaxies falling toward
+    Virgo and the Great Attractor, with blue arrows on the far side of a mass pointing back toward it.
+- **Length** grows with the size of the shift. It is measured in **screen pixels**, so arrows stay readable at any
+  zoom: `L = clamp(k · log10(1 + |v| / 100 km/s), 3, 60)` pixels, where |v| is |cz| (Observed, or c·z when
+  z > 0.1) or |v_pec| (Peculiar). An **arrow scale** slider sets k (default 18). Using a log scale keeps both
+  ~50 km/s Local Group motions and z ≈ 7 quasars visible together.
+- Each arrow is a 1-pixel line with a small open arrowhead, at 70% opacity so dense regions stay readable. Arrows
+  follow every filter (maximum distance, type checkboxes).
+
 ### Coordinates
 - Internal positions are Sun-centered Cartesian vectors in **Mpc in the J2000 equatorial frame**, computed from
   RA, Dec and distance.
@@ -131,6 +178,11 @@ The original code is always kept and shown as well.
     (lenticulars) or noise patches (irregulars).
   - Instances are chosen on the CPU when the camera moves (projected size > 4 px, at most 20,000 drawn). The dot
     and the shape cross-fade between 4 and 8 px.
+- **Velocity arrows** (optional): drawn in one pass from the point-cloud buffer, whose per-vertex data also
+  carries signed radial and peculiar velocities. A geometry shader turns each visible point into a screen-space
+  line plus a 2-segment arrowhead along the projected Sun→object direction, using the length formula in §3.
+  If the projected direction is under 1 pixel (an object straight ahead), the arrowhead is drawn as a small
+  ⊙ (approaching) or ⊗ (receding) marker instead. Nothing is re-uploaded when the mode or scale changes.
 - **Clusters**: instanced translucent spheres with radius R500 (or 1.5 Mpc when unknown), plus a core point.
 - **Milky Way**: a procedural barred-spiral disk with the Sun marker.
 - **Scale rings**: concentric rings in the display frame's reference plane at 1–3–10 spacing (1 Mly, 3 Mly,
@@ -162,6 +214,8 @@ information panel and a bottom status bar.
   - **Type checkboxes**, whose contents depend on the data set: galaxy classes, cluster sources, quasar types.
   - **Color mode** (type or velocity) and **frame** (supergalactic, galactic or equatorial).
   - Toggles for galaxy shapes, names, scale rings and the Milky Way.
+  - **Velocity arrows**: the show/hide toggle, the **arrow mode** (Observed or Peculiar), and the **arrow scale**
+    slider. Peculiar mode is disabled, with a tooltip, for data sets that have no measured distances.
   - The **quasar limit** (only for data set 4).
   - **Catalogs**: "Download latest" and "Use built-in snapshot", with status text.
 - **Right panel**, for the selected object:
@@ -171,7 +225,7 @@ information panel and a bottom status bar.
   - For clusters: mass M500 and radius R500. For quasars: magnitudes and type.
   - The data source catalogs.
 - **Status bar**: data set, objects shown / loaded, objects excluded (with no valid distance), camera distance,
-  fps, and warnings (for example "running on a DisplayLink display").
+  fps, and warnings (for example "running on a USB display adapter" or "reduced defaults for this GPU").
 - Keyboard: Home (fit), F (focus), Ctrl+F (search).
 
 ## 6. Code structure
@@ -190,7 +244,7 @@ C:\repos\Universe3D
                  SnapshotStore (embedded + %LOCALAPPDATA%\Universe3D)
     Data/Embedded/  the four built-in snapshots (*.u3d.gz)
   src/Universe3D.Rendering     (net8.0-windows; OpenTK, GLWpfControl)
-    GlHost, ShaderProgram, Buffers, PointCloudRenderer, ShapeRenderer, ClusterRenderer,
+    GlHost, ShaderProgram, Buffers, PointCloudRenderer, VelocityArrowRenderer, ShapeRenderer, ClusterRenderer,
     MilkyWayRenderer, ScaleRingRenderer, OrbitCamera, Projector, Picker, Shaders/*.glsl (embedded)
   src/Universe3D.App           (net8.0-windows; WPF, CommunityToolkit.Mvvm)
     ViewModels/ (MainViewModel, DataSetViewModel, FilterOptions, InfoViewModel), Controllers/SceneController,
@@ -210,7 +264,9 @@ C:\repos\Universe3D
 - **Malformed rows** (missing RA, Dec or z, out-of-range values): skip them, count them, and report the count in the
   build summary and status bar.
 - **OpenGL context failure or version below 4.1**: show a message naming the requirement and the detected
-  renderer, with a hint to use the laptop screen if the window is on a DisplayLink display. Don't crash.
+  renderer, with a hint to move the window to a screen driven directly by the GPU if it's on a USB display
+  adapter. Don't crash.
+- **Weaker GPU detected**: apply the reduced defaults from §1 and mention it once in the status bar.
 - **Corrupt snapshot in the cache**: delete it and fall back to the built-in snapshot, with a status message.
 
 ## 8. Testing
@@ -239,16 +295,22 @@ xUnit tests in `Universe3D.Tests`:
   q within 0.01 (for q > q₀).
 - **Cross-matcher**: synthetic catalogs with known pairs, including pairs near RA 0/360 and the poles.
 - **Snapshot serializer**: a save/load round trip of every field.
+- **Velocity arrows** (the CPU-side reference function that mirrors the shader math):
+  - Andromeda's arrow points toward the Sun and is blue; Coma's points away and is red.
+  - Length grows with |v| and is clamped to 3–60 px.
+  - Peculiar mode gives no arrow to objects without a measured distance.
 - **Visual and performance checks** (manual, with screenshots as in SolarSystem3D):
-  - Frame rate for each data set, including quasars at 250,000 and all.
-  - Done **on the laptop screen and on a DisplayLink monitor**, as milestone 3, before shapes and UI are built
-    on top of the renderer.
+  - Frame rate for each data set, including quasars at 250,000 and all, with velocity arrows on and off.
+  - Done on the development machine's built-in display (recommended class) and, as a stress case, on a USB
+    display adapter, as milestone 3, before shapes and UI are built on top of the renderer.
+  - The minimum class is checked with the reduced defaults by capping the GPU frame budget. If an 8th-gen Intel
+    UHD 620 machine is available, it is also measured on that.
 
 ## 9. Build order (detailed in the implementation plan)
 
 1. Core math: cosmology, frames, morphology, shapes, and their tests.
 2. Data pipeline: VizieR client, cross-matcher, builders, snapshots, and the built-in snapshots.
-3. A minimal OpenGL point renderer and camera, plus the **performance and DisplayLink check**.
+3. A minimal OpenGL point renderer, camera and velocity arrows, plus the **performance check** (§8).
 4. Galaxy shapes, cluster spheres, Milky Way and scale rings.
 5. UI: data-set selector, filters, search, picking, info panel and names.
 6. Polish, README, and an optional GitHub repository (asked at the time).
