@@ -29,8 +29,9 @@ public sealed class SnapshotStore : IDataSetStore
 
     private string CachePath(DataSetKind kind) => Path.Combine(_cacheDir, FileName(kind));
 
-    public DataSet Load(DataSetKind kind, out bool fromCache)
+    public DataSet Load(DataSetKind kind, out bool fromCache, out string? cacheProblem)
     {
+        cacheProblem = null;
         string path = CachePath(kind);
         if (File.Exists(path))
         {
@@ -42,17 +43,29 @@ public sealed class SnapshotStore : IDataSetStore
                 fromCache = true;
                 return cached;
             }
-            catch (Exception ex) when (ex is InvalidDataException or IOException or ArgumentException
-                                          or OverflowException or NotSupportedException)
+            catch (Exception ex) when (!IsFatal(ex))
             {
-                try { File.Delete(path); }
-                catch (Exception d) when (d is IOException or UnauthorizedAccessException) { }
+                // Ruling R40: whatever is wrong with the downloaded copy, fall back to the built-in snapshot.
+                cacheProblem = $"The downloaded copy could not be read ({ex.Message})";
+                try
+                {
+                    File.Delete(path);
+                    cacheProblem += " and was deleted.";
+                }
+                catch (Exception d) when (!IsFatal(d))
+                {
+                    cacheProblem += $"; it could not be deleted either ({d.Message}).";
+                }
             }
         }
         fromCache = false;
         using var stream = _builtIn(kind);
         return SnapshotSerializer.Read(stream);
     }
+
+    /// <summary>Exceptions that mean the process itself is in trouble; everything else is a bad cache file.</summary>
+    private static bool IsFatal(Exception ex) =>
+        ex is StackOverflowException or AccessViolationException or InsufficientExecutionStackException;
 
     public void Save(DataSet dataSet)
     {

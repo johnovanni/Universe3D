@@ -170,6 +170,105 @@ public class SnapshotTests : IDisposable
         Assert.Throws<InvalidDataException>(() => SnapshotSerializer.Read(ms));
     }
 
+    /// <summary>A gzip stream holding the snapshot header (magic, version) followed by <paramref name="body"/>.</summary>
+    private static MemoryStream Gzipped(Action<BinaryWriter> body)
+    {
+        var ms = new MemoryStream();
+        using (var gz = new GZipStream(ms, CompressionLevel.Fastest, leaveOpen: true))
+        using (var w = new BinaryWriter(gz, Encoding.UTF8, leaveOpen: true))
+        {
+            w.Write(Encoding.ASCII.GetBytes("U3D1"));
+            w.Write(1);
+            body(w);
+        }
+        ms.Position = 0;
+        return ms;
+    }
+
+    /// <summary>A valid data-set header (Local Volume, one object) and the common fields of one galaxy.</summary>
+    private static void HeaderAndGalaxyStart(BinaryWriter w, int kind = 0)
+    {
+        w.Write(kind); w.Write(0); w.Write(0); w.Write(0L); w.Write((int)DateTimeKind.Utc); w.Write("summary");
+        w.Write(1);
+        w.Write((byte)0); // galaxy
+        w.Write("UNGC:X"); w.Write("X");
+    }
+
+    [Fact]
+    public void Snapshot_RejectsHugeArrayLength()
+    {
+        // A garbage AltNames length must not be allocated (it would throw OutOfMemoryException).
+        using var ms = Gzipped(w => { HeaderAndGalaxyStart(w); w.Write(int.MaxValue); });
+        var ex = Assert.Throws<InvalidDataException>(() => SnapshotSerializer.Read(ms));
+        Assert.Contains("length", ex.Message);
+    }
+
+    [Fact]
+    public void Snapshot_RejectsHugeObjectCount()
+    {
+        using var ms = Gzipped(w =>
+        {
+            w.Write(0); w.Write(0); w.Write(0); w.Write(0L); w.Write((int)DateTimeKind.Utc); w.Write("summary");
+            w.Write(int.MaxValue);
+        });
+        Assert.Throws<InvalidDataException>(() => SnapshotSerializer.Read(ms));
+    }
+
+    [Theory]
+    [InlineData(99, 1)]    // data-set kind
+    [InlineData(0, 99)]    // DateTimeKind
+    public void Snapshot_RejectsUnknownHeaderEnums(int kind, int dateTimeKind)
+    {
+        using var ms = Gzipped(w =>
+        {
+            w.Write(kind); w.Write(0); w.Write(0); w.Write(0L); w.Write(dateTimeKind); w.Write("summary"); w.Write(0);
+        });
+        Assert.Throws<InvalidDataException>(() => SnapshotSerializer.Read(ms));
+    }
+
+    [Theory]
+    [InlineData(0)] // distance source
+    [InlineData(1)] // morphology class
+    [InlineData(2)] // quasar type
+    [InlineData(3)] // cluster catalogs
+    public void Snapshot_RejectsUnknownObjectEnums(int which)
+    {
+        // One object, written field by field as SnapshotSerializer does, with one bad enum value.
+        using var ms = Gzipped(w =>
+        {
+            w.Write(0); w.Write(0); w.Write(0); w.Write(0L); w.Write((int)DateTimeKind.Utc); w.Write("summary");
+            w.Write(1);
+            byte tag = which switch { 2 => (byte)2, 3 => (byte)1, _ => (byte)0 };
+            w.Write(tag); w.Write("ID:1"); w.Write("N"); w.Write(0);
+            w.Write(1.0); w.Write(2.0); w.Write(3.0);
+            w.Write(which == 0 ? 7 : 0); // distance source
+            w.Write("cat");
+            for (int i = 0; i < 4; i++) { w.Write(false); w.Write(0.0); } // z, cz, vcmb, pec
+            w.Write(0.0); // lookback
+            w.Write(false); w.Write(0.0); // magnitude
+            w.Write(0); // sources
+            switch (tag)
+            {
+                case 0:
+                    w.Write(which == 1 ? 42 : 0); w.Write("d"); w.Write("c"); w.Write(false);
+                    for (int i = 0; i < 3; i++) { w.Write(false); w.Write(0.0); }
+                    w.Write(false);
+                    w.Write(false); w.Write(0.0);
+                    break;
+                case 1:
+                    for (int i = 0; i < 3; i++) { w.Write(false); w.Write(0.0); }
+                    w.Write(false); w.Write(0); w.Write(false); w.Write("");
+                    w.Write(8); // no such catalog bit
+                    break;
+                case 2:
+                    w.Write(9); // no such quasar type
+                    w.Write(false); w.Write(0.0); w.Write(false); w.Write(0.0);
+                    break;
+            }
+        });
+        Assert.Throws<InvalidDataException>(() => SnapshotSerializer.Read(ms));
+    }
+
     private (SnapshotStore store, string cacheDir) MakeStore()
     {
         string builtInPath = Path.Combine(_dir, "builtin.u3d.gz");
@@ -186,11 +285,80 @@ public class SnapshotTests : IDisposable
         string file = Path.Combine(cache, "localvolume.u3d.gz");
         File.WriteAllBytes(file, new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 });
 
-        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache);
+        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache, out string? problem);
 
         Assert.False(fromCache);
         Assert.False(File.Exists(file));
         Assert.Equal(4, ds.Objects.Count);
+        Assert.NotNull(problem);
+    }
+
+    /// <summary>Ruling R40: valid gzip with a garbage payload (here a malformed string length) falls back too.</summary>
+    [Theory]
+    [InlineData(0)] // FormatException from a 7-bit length that never ends
+    [InlineData(1)] // huge array length
+    [InlineData(2)] // random bytes after the header
+    public void Store_GarbagePayloadInCache_FallsBackDeletesAndReports(int variant)
+    {
+        var (store, cache) = MakeStore();
+        Directory.CreateDirectory(cache);
+        string file = Path.Combine(cache, "localvolume.u3d.gz");
+        using (var payload = Gzipped(w =>
+               {
+                   switch (variant)
+                   {
+                       case 0:
+                           w.Write(0); w.Write(0); w.Write(0); w.Write(0L); w.Write(1);
+                           w.Write(new byte[] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF });
+                           break;
+                       case 1:
+                           HeaderAndGalaxyStart(w);
+                           w.Write(int.MaxValue);
+                           break;
+                       default:
+                           var rnd = new Random(1234);
+                           var bytes = new byte[4096];
+                           rnd.NextBytes(bytes);
+                           w.Write(bytes);
+                           break;
+                   }
+               }))
+            File.WriteAllBytes(file, payload.ToArray());
+
+        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache, out string? problem);
+
+        Assert.False(fromCache);
+        Assert.False(File.Exists(file));
+        Assert.Equal(4, ds.Objects.Count);
+        Assert.False(string.IsNullOrWhiteSpace(problem));
+        Assert.Contains("deleted", problem);
+    }
+
+    [Fact]
+    public void Store_WrongKindInCache_FallsBackAndReports()
+    {
+        var (store, cache) = MakeStore();
+        Directory.CreateDirectory(cache);
+        string file = Path.Combine(cache, "localvolume.u3d.gz");
+        using (var fs = File.Create(file)) SnapshotSerializer.Write(fs, Sample(DataSetKind.Clusters));
+
+        store.Load(DataSetKind.LocalVolume, out bool fromCache, out string? problem);
+
+        Assert.False(fromCache);
+        Assert.False(File.Exists(file));
+        Assert.NotNull(problem);
+    }
+
+    [Fact]
+    public void Store_GoodOrMissingCache_ReportsNoProblem()
+    {
+        var (store, _) = MakeStore();
+        store.Load(DataSetKind.LocalVolume, out _, out string? none);
+        Assert.Null(none);
+        store.Save(Sample());
+        store.Load(DataSetKind.LocalVolume, out bool fromCache, out string? stillNone);
+        Assert.True(fromCache);
+        Assert.Null(stillNone);
     }
 
     [Fact]
@@ -202,7 +370,7 @@ public class SnapshotTests : IDisposable
         store.Save(saved);
 
         Assert.True(store.HasDownloadedCopy(DataSetKind.LocalVolume));
-        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache);
+        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache, out _);
         Assert.True(fromCache);
         Assert.Single(ds.Objects);
         Assert.Equal("downloaded", ds.SourceSummary);
@@ -218,7 +386,7 @@ public class SnapshotTests : IDisposable
         store.ClearDownloaded(DataSetKind.LocalVolume);
 
         Assert.False(store.HasDownloadedCopy(DataSetKind.LocalVolume));
-        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache);
+        var ds = store.Load(DataSetKind.LocalVolume, out bool fromCache, out _);
         Assert.False(fromCache);
         Assert.Equal(4, ds.Objects.Count);
     }

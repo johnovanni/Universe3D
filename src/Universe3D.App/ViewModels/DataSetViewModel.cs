@@ -51,13 +51,17 @@ public sealed partial class DataSetViewModel : ObservableObject
     /// <summary>True when the data came from a downloaded copy rather than the built-in snapshot.</summary>
     public bool FromCache { get; private set; }
 
+    /// <summary>Why a downloaded copy was not used (it was unreadable and has been deleted), or null.</summary>
+    public string? CacheProblem { get; private set; }
+
     /// <summary>Loads once (off the UI thread); later calls return the same task. A failed load can be retried.</summary>
     public async Task<DataSet> LoadAsync(IDataSetStore store)
     {
         _loading ??= Task.Run(() =>
         {
-            var loaded = store.Load(Kind, out bool fromCache);
+            var loaded = store.Load(Kind, out bool fromCache, out string? cacheProblem);
             FromCache = fromCache;
+            CacheProblem = cacheProblem;
             return loaded;
         });
         try
@@ -81,6 +85,7 @@ public sealed partial class DataSetViewModel : ObservableObject
         _loading = null;
         Data = null;
         FromCache = false;
+        CacheProblem = null;
         Summary = "Not loaded yet";
     }
 

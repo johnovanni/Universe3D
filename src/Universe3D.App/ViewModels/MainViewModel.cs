@@ -225,7 +225,8 @@ public sealed partial class MainViewModel : ObservableObject
             ApplyLimit();
             DataSetStatus = dsvm.Title;
             CatalogStatus = (dsvm.FromCache ? "Downloaded copy" : "Built-in snapshot") +
-                            $", built {ds.BuiltUtc.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}";
+                            $", built {ds.BuiltUtc.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}" +
+                            (dsvm.CacheProblem is { } problem ? $". {problem} The built-in snapshot is shown." : "");
             CatalogSources = ds.SourceSummary +
                              (ds.SkippedRows > 0 ? $". {ds.SkippedRows:N0} catalog rows skipped (incomplete)." : "");
             UseBuiltInCommand.NotifyCanExecuteChanged();

@@ -10,7 +10,7 @@ public class NameSearchTests
         Path.Combine(Path.GetTempPath(), "Universe3D.NoCache." + Guid.NewGuid().ToString("N"));
 
     private static IReadOnlyList<CosmicObject> Load(DataSetKind kind) =>
-        new SnapshotStore(NoCache).Load(kind, out _).Objects;
+        new SnapshotStore(NoCache).Load(kind, out _, out _).Objects;
 
     private static Galaxy G(string name, params string[] alt) => new() { Id = "T:" + name, Name = name, AltNames = alt };
 

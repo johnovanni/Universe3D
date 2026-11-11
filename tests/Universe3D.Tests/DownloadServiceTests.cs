@@ -49,7 +49,12 @@ public class DownloadServiceTests : IDisposable
     private sealed class MemoryStore : IDataSetStore
     {
         public List<DataSet> Saved { get; } = new();
-        public DataSet Load(DataSetKind kind, out bool fromCache) { fromCache = false; return Tiny(kind); }
+        public DataSet Load(DataSetKind kind, out bool fromCache, out string? cacheProblem)
+        {
+            fromCache = false;
+            cacheProblem = null;
+            return Tiny(kind);
+        }
         public void Save(DataSet dataSet) => Saved.Add(dataSet);
         public bool HasDownloadedCopy(DataSetKind kind) => Saved.Any(d => d.Kind == kind);
         public void ClearDownloaded(DataSetKind kind) => Saved.RemoveAll(d => d.Kind == kind);
@@ -63,7 +68,7 @@ public class DownloadServiceTests : IDisposable
         var ds = await service.DownloadAsync(DataSetKind.LocalVolume, new Progress<string>(), CancellationToken.None);
 
         Assert.True(File.Exists(Path.Combine(_dir, SnapshotStore.FileName(DataSetKind.LocalVolume))));
-        var loaded = store.Load(DataSetKind.LocalVolume, out bool fromCache);
+        var loaded = store.Load(DataSetKind.LocalVolume, out bool fromCache, out _);
         Assert.True(fromCache);
         Assert.Equal(ds.Objects.Count, loaded.Objects.Count);
         Assert.NotEmpty(loaded.Objects);

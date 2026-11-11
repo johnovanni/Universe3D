@@ -18,7 +18,7 @@ public class KnownObjectTests
         {
             if (!Cache.TryGetValue(kind, out var ds))
             {
-                ds = new SnapshotStore(NoCache).Load(kind, out bool fromCache);
+                ds = new SnapshotStore(NoCache).Load(kind, out bool fromCache, out _);
                 Assert.False(fromCache);
                 Cache[kind] = ds;
             }
