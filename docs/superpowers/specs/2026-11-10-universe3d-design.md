@@ -120,15 +120,19 @@ Rules and limits:
 
   This is shown truthfully rather than inventing a 3D velocity. The info panel says "arrow shows line-of-sight
   motion only".
-- **Arrow mode**, a selector:
+- **Arrow mode**, a selector using the standard astronomical terms, each with a plain-language tooltip:
   - **Observed** (default): the measured redshift or blueshift (heliocentric cz, or z for distant objects). This is
     almost all red beyond the Local Group, because the universe is expanding.
-  - **Peculiar**: the radial peculiar velocity `v_pec ≈ v_CMB − H₀·d`, with the expansion of the universe removed.
-    Only objects with a measured distance get an arrow (data sets 1–2). This mode shows galaxies falling toward
-    Virgo and the Great Attractor, with blue arrows on the far side of a mass pointing back toward it.
+    Tooltip: *"What telescopes measure: the galaxy's own motion plus the expansion of the universe, which carries
+    distant galaxies away from us."*
+  - **Peculiar velocity**: the radial peculiar velocity `v_pec ≈ v_CMB − H₀·d`, with the expansion of the universe
+    removed. Only objects with a measured distance get an arrow (data sets 1–2). This mode shows galaxies falling
+    toward Virgo and the Great Attractor, with blue arrows on the far side of a mass pointing back toward it.
+    Tooltip: *"The galaxy's own motion through space, with the universe's expansion removed. 'Peculiar' means
+    particular to this galaxy, not strange. It is usually caused by the gravity of nearby galaxies and clusters."*
 - **Length** grows with the size of the shift. It is measured in **screen pixels**, so arrows stay readable at any
   zoom: `L = clamp(k · log10(1 + |v| / 100 km/s), 3, 60)` pixels, where |v| is |cz| (Observed, or c·z when
-  z > 0.1) or |v_pec| (Peculiar). An **arrow scale** slider sets k (default 18). Using a log scale keeps both
+  z > 0.1) or |v_pec| (Peculiar velocity). An **arrow scale** slider sets k (default 18). Using a log scale keeps both
   ~50 km/s Local Group motions and z ≈ 7 quasars visible together.
 - Each arrow is a 1-pixel line with a small open arrowhead, at 70% opacity so dense regions stay readable. Arrows
   follow every filter (maximum distance, type checkboxes).
@@ -207,6 +211,12 @@ The original code is always kept and shown as well.
 The layout follows SolarSystem3D: a dark theme, a left control panel, the 3D view in the center, a right
 information panel and a bottom status bar.
 
+**Terminology:** the audience is people exploring and learning. The UI uses the **standard astronomical terms**
+(redshift, blueshift, peculiar velocity, comoving distance, look-back time, Hubble type, M500, quasar, AGN, BL Lac),
+and **every one has a plain-language tooltip** where it appears: control labels, filter checkboxes and info-panel
+fields. The tooltip texts live in one resource file (`Glossary`), so wording stays consistent and can be reviewed
+in one place.
+
 - **Left panel**:
   - The **data-set list box**, with each set's object count and distance range.
   - **Search** by name (M31, NGC 4486, Coma, Abell 1656, 3C 273).
@@ -214,8 +224,9 @@ information panel and a bottom status bar.
   - **Type checkboxes**, whose contents depend on the data set: galaxy classes, cluster sources, quasar types.
   - **Color mode** (type or velocity) and **frame** (supergalactic, galactic or equatorial).
   - Toggles for galaxy shapes, names, scale rings and the Milky Way.
-  - **Velocity arrows**: the show/hide toggle, the **arrow mode** (Observed or Peculiar), and the **arrow scale**
-    slider. Peculiar mode is disabled, with a tooltip, for data sets that have no measured distances.
+  - **Velocity arrows**: the show/hide toggle, the **arrow mode** (Observed or Peculiar velocity), and the
+    **arrow scale** slider. Peculiar velocity mode is disabled, with a tooltip, for data sets that have no measured
+    distances.
   - The **quasar limit** (only for data set 4).
   - **Catalogs**: "Download latest" and "Use built-in snapshot", with status text.
 - **Right panel**, for the selected object:
@@ -298,7 +309,7 @@ xUnit tests in `Universe3D.Tests`:
 - **Velocity arrows** (the CPU-side reference function that mirrors the shader math):
   - Andromeda's arrow points toward the Sun and is blue; Coma's points away and is red.
   - Length grows with |v| and is clamped to 3–60 px.
-  - Peculiar mode gives no arrow to objects without a measured distance.
+  - Peculiar velocity mode gives no arrow to objects without a measured distance.
 - **Visual and performance checks** (manual, with screenshots as in SolarSystem3D):
   - Frame rate for each data set, including quasars at 250,000 and all, with velocity arrows on and off.
   - Done on the development machine's built-in display (recommended class) and, as a stress case, on a USB
