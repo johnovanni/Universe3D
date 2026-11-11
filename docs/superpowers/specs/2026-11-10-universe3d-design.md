@@ -133,8 +133,10 @@ Rules and limits:
     distant galaxies away from us."*
   - **Peculiar velocity**: the radial peculiar velocity defined above, with the expansion of the universe
     removed. Only objects that have one get an arrow (measured distances in data sets 1–2, within the limits
-    above). This mode shows galaxies falling toward Virgo and the Great Attractor, with blue arrows on the far side
-    of a mass pointing back toward it.
+    above). Individual values are noisy, because measured distances carry 10–20% errors, so infall toward a mass
+    such as Virgo appears only as a statistical tendency, not a clean pattern. In the built-in Nearby data set,
+    within 10 Mpc of M87: near side 119 red / 58 blue arrows (median +191 km/s); far side 70 red / 43 blue
+    (median +114 km/s). The far side is less red, as infall predicts, but most arrows on both sides are red.
     Tooltip: *"The galaxy's own motion through space, with the universe's expansion removed. 'Peculiar' means
     particular to this galaxy, not strange. It is usually caused by the gravity of nearby galaxies and clusters."*
 - **Length** grows with the size of the shift. It is measured in **screen pixels**, so arrows stay readable at any

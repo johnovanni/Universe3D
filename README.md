@@ -22,7 +22,10 @@ It is made for exploring and learning, with astronomically correct positions. It
   true place, 8.2 kpc from the Sun.
 - **See motion**: color objects by type or by redshift and blueshift, and optionally draw a fine arrow on each
   object (red for receding, blue for approaching). "Observed" arrows show the measured shift; "Peculiar velocity"
-  arrows remove the expansion of the universe and show galaxies falling toward Virgo and the Great Attractor.
+  arrows remove the expansion of the universe and show each galaxy's own motion. Individual values are noisy,
+  because galaxy distances carry errors of 10–20%. Effects such as the infall toward the Virgo Cluster show up as
+  a tendency across many galaxies, not as a clean pattern: galaxies between us and Virgo are mostly red (moving
+  away from us, toward Virgo), and galaxies behind Virgo are less red, with more blue among them.
 - **Filter**: maximum distance, object types, a limit on the number of quasars, and a limit on the number of
   galaxy shapes drawn.
 - **Learn as you go**: every astronomy term in the window has a plain-language tooltip, and the information panel
