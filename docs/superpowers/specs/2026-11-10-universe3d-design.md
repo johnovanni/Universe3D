@@ -107,8 +107,14 @@ Rules and limits:
 - Every object shows z, heliocentric radial velocity cz, and a plain-language line, for example
   "Blueshifted: approaching at 300 km/s" or "Redshifted: receding at 1,284 km/s".
   For z > 0.1 the line says "recession due to cosmic expansion", and look-back time is the headline figure.
-- For galaxies with a measured distance, the panel also shows **peculiar velocity**:
-  `v_pec ≈ v_CMB − H₀·d`, using the Cosmicflows‑4 convention, at low z only (z < 0.1).
+- For galaxies with a measured distance, the panel also shows **peculiar velocity**, using the convention of the
+  catalog that measured the distance, and names its frame (ruling R38):
+  - Cosmicflows‑4 distances: `v_pec = v_CMB − 74.6·d`, with CF4's own Hubble constant (Tully+ 2023), and only for
+    d ≤ 150 Mpc. Farther out a single CF4 distance is uncertain by about 20%, so the panel says "not reliable at
+    this distance" and no peculiar arrow is drawn.
+  - Local Volume distances (McConnachie, UNGC): the Local Group frame, `v_pec = v_LG − 73·d` (the Karachentsev
+    convention), so the Local Group's own motion through the CMB is not counted. M31 comes out at about
+    −120 km/s.
 
 ### Velocity arrows (optional display)
 - With **Show velocity arrows** on, each visible object gets a fine arrow: **red** for redshift (receding) and
@@ -125,9 +131,10 @@ Rules and limits:
     almost all red beyond the Local Group, because the universe is expanding.
     Tooltip: *"What telescopes measure: the galaxy's own motion plus the expansion of the universe, which carries
     distant galaxies away from us."*
-  - **Peculiar velocity**: the radial peculiar velocity `v_pec ≈ v_CMB − H₀·d`, with the expansion of the universe
-    removed. Only objects with a measured distance get an arrow (data sets 1–2). This mode shows galaxies falling
-    toward Virgo and the Great Attractor, with blue arrows on the far side of a mass pointing back toward it.
+  - **Peculiar velocity**: the radial peculiar velocity defined above, with the expansion of the universe
+    removed. Only objects that have one get an arrow (measured distances in data sets 1–2, within the limits
+    above). This mode shows galaxies falling toward Virgo and the Great Attractor, with blue arrows on the far side
+    of a mass pointing back toward it.
     Tooltip: *"The galaxy's own motion through space, with the universe's expansion removed. 'Peculiar' means
     particular to this galaxy, not strange. It is usually caused by the gravity of nearby galaxies and clusters."*
 - **Length** grows with the size of the shift. It is measured in **screen pixels**, so arrows stay readable at any

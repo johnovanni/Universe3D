@@ -14,7 +14,7 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
 {
     private const string TwoMrsSource = "J/ApJS/199/26/table3";
     private const string Cf4Source = "J/ApJ/944/94/table2";
-    private const string Cf4Name = "Cosmicflows-4";
+    private const string Cf4Name = PeculiarVelocityRule.Cosmicflows4;
     private const double MatchArcsec = 30;
 
     // CAT holds the catalog designation ("MESSIER_087", "NGC_0253"); SimbadName is the 2MASX name.

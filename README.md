@@ -139,7 +139,10 @@ supergalactic frame by default (Galactic and Equatorial are options).
 
 **Velocity.** Every object shows z, the heliocentric radial velocity cz, and a plain-language line such as
 "Blueshifted: approaching at 300 km/s". For galaxies with a measured distance the panel also shows the
-**peculiar velocity**, `v_pec = v_CMB - H0 * d`, which removes the expansion of the universe. A redshift only
+**peculiar velocity**, which removes the expansion of the universe, in the convention of the catalog that
+measured the distance: `v_pec = v_CMB - 74.6 * d` for Cosmicflows-4 (its own Hubble constant; only up to 150 Mpc,
+beyond which single distances are too uncertain), and `v_pec = v_LG - 73 * d` in the Local Group frame for UNGC
+and McConnachie distances. The panel names the frame. A redshift only
 measures motion along our line of sight, so a velocity arrow always lies on the line from the Sun to the object:
 outward when receding, inward when approaching. Its length is `L = clamp(k * log10(1 + |v|/100 km/s), 3, 60)`
 pixels (k = 18 by default, adjustable).

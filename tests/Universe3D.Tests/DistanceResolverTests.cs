@@ -91,4 +91,46 @@ public class DistanceResolverTests
         Assert.True(res.LookbackGyr > 0);
         Assert.Equal(expected, res.LookbackGyr, 1e-12);
     }
+
+    // Ruling R38: the peculiar velocity follows the convention of the catalog that gave the distance.
+
+    [Theory]
+    [InlineData("UNGC")]
+    [InlineData("McConnachie 2012")]
+    public void Peculiar_LocalVolume_UsesLocalGroupFrameAndH73(string catalog)
+    {
+        // M31: cz -300 km/s at 0.77 Mpc. In the Local Group frame it approaches at about 120 km/s.
+        var res = _r.Resolve(10.6847, 41.2690, 0.77, catalog, -300, null)!;
+        Assert.InRange(res.PeculiarKms!.Value, -160, -80);
+        var (l, b) = SkyMath.ToSpherical(SkyFrames.EquatorialToGalactic * SkyMath.UnitVector(10.6847, 41.2690));
+        Assert.Equal(RedshiftMath.HelioToLocalGroup(-300, l, b) - 73 * 0.77, res.PeculiarKms.Value, 9);
+    }
+
+    [Fact]
+    public void Peculiar_Cosmicflows4_UsesItsOwnH0()
+    {
+        var res = _r.Resolve(150, 20, 50, PeculiarVelocityRule.Cosmicflows4, 4000, null)!;
+        Assert.Equal(res.VCmb!.Value - 74.6 * 50, res.PeculiarKms!.Value, 9);
+    }
+
+    [Fact]
+    public void Peculiar_Cosmicflows4_BeyondLimit_IsNull()
+    {
+        var res = _r.Resolve(150, 20, 151, PeculiarVelocityRule.Cosmicflows4, 11000, null)!;
+        Assert.NotNull(res.VCmb);
+        Assert.Null(res.PeculiarKms);
+        Assert.True(PeculiarVelocityRule.IsUnreliable(PeculiarVelocityRule.Cosmicflows4, 151));
+        Assert.False(PeculiarVelocityRule.IsUnreliable(PeculiarVelocityRule.Cosmicflows4, 150));
+        Assert.False(PeculiarVelocityRule.IsUnreliable("UNGC", 151));
+    }
+
+    [Fact]
+    public void Peculiar_UnknownCatalog_IsNull()
+    {
+        Assert.Null(_r.Resolve(150, 20, 50, "Somewhere", 4000, null)!.PeculiarKms);
+        Assert.Equal(PeculiarFrame.None, PeculiarVelocityRule.FrameOf("Somewhere"));
+        Assert.Equal(PeculiarFrame.LocalGroup, PeculiarVelocityRule.FrameOf("UNGC"));
+        Assert.Equal(PeculiarFrame.LocalGroup, PeculiarVelocityRule.FrameOf("McConnachie 2012"));
+        Assert.Equal(PeculiarFrame.CosmicMicrowaveBackground, PeculiarVelocityRule.FrameOf("Cosmicflows-4"));
+    }
 }

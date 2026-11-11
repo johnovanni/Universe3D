@@ -10,8 +10,8 @@ public static class RedshiftMath
     private const double CmbDipoleKms = 369.8;
     private const double CmbApexL = 264.0, CmbApexB = 48.3;
     private const double LocalGroupKms = 300.0;
-    private const double H0 = 70.0;
-    /// <summary>Above this redshift the shift is described as cosmic expansion and peculiar velocities are not computed.</summary>
+
+    /// <summary>Above this redshift the shift is described as cosmic expansion rather than as a speed.</summary>
     public const double CosmicExpansionZ = 0.1;
 
     private static readonly Vector3d CmbApex = SkyMath.UnitVector(CmbApexL, CmbApexB);
@@ -26,10 +26,6 @@ public static class RedshiftMath
         double l = lDeg * Math.PI / 180.0, b = bDeg * Math.PI / 180.0;
         return czHelio + LocalGroupKms * Math.Sin(l) * Math.Cos(b);
     }
-
-    /// <summary>v_pec = v_CMB - H0 d; null when z is too large for the linear Hubble law (z &gt;= 0.1).</summary>
-    public static double? PeculiarVelocity(double vCmb, double distanceMpc, double z)
-        => z >= CosmicExpansionZ ? null : vCmb - H0 * distanceMpc;
 
     public static string ShiftDescription(double czHelio, double z)
     {

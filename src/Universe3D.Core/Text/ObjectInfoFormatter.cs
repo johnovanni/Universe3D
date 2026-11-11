@@ -1,4 +1,5 @@
 using System.Globalization;
+using Universe3D.Core.Catalogs;
 using Universe3D.Core.Cosmology;
 using Universe3D.Core.Morphology;
 using Universe3D.Core.Objects;
@@ -52,10 +53,7 @@ public static class ObjectInfoFormatter
             rows.Add(new("cz (heliocentric)",
                 Kms(v) + (cosmic ? " (the redshift written as a speed; not a real speed this far away)" : ""), "Cz"));
             if (!cosmic && o.VCmb is double cmb) rows.Add(new("CMB-frame velocity", Kms(cmb), "CmbFrame"));
-            if (!cosmic && measured && o.PeculiarKms is double pec)
-                rows.Add(new("Peculiar velocity",
-                    $"{Kms(Math.Abs(pec))} {(pec < 0 ? "toward us" : "away from us")}, with the expansion removed",
-                    "PeculiarVelocity"));
+            if (!cosmic && measured && PeculiarRow(o) is { } pecRow) rows.Add(pecRow);
             rows.Add(new("Velocity arrow", "Line-of-sight motion only", "LineOfSightOnly"));
         }
         else
@@ -82,6 +80,29 @@ public static class ObjectInfoFormatter
         if (o.Sources.Length > 0) rows.Add(new("Data sources", string.Join(", ", o.Sources), null));
         rows.Add(new("Catalog id", o.Id, null));
         return rows;
+    }
+
+    /// <summary>
+    /// Ruling R38: the peculiar velocity names its frame (Local Group for Local Volume distances, the cosmic microwave
+    /// background for Cosmicflows-4); beyond the Cosmicflows-4 limit it is "not reliable at this distance".
+    /// </summary>
+    private static InfoRow? PeculiarRow(CosmicObject o)
+    {
+        if (o.PeculiarKms is double pec)
+        {
+            string frame = PeculiarVelocityRule.FrameOf(o.DistanceCatalog) switch
+            {
+                PeculiarFrame.LocalGroup => ", relative to the Local Group",
+                PeculiarFrame.CosmicMicrowaveBackground => ", relative to the cosmic microwave background",
+                _ => "",
+            };
+            return new("Peculiar velocity",
+                $"{Kms(Math.Abs(pec))} {(pec < 0 ? "toward us" : "away from us")}{frame}, with the expansion removed",
+                "PeculiarVelocity");
+        }
+        return PeculiarVelocityRule.IsUnreliable(o.DistanceCatalog, o.DistanceMpc)
+            ? new("Peculiar velocity", "not reliable at this distance", "PeculiarVelocity")
+            : null;
     }
 
     /// <summary>Ruling R8: a measured distance gives the light-travel time; otherwise the redshift does.</summary>

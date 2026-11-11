@@ -14,8 +14,8 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
 {
     private const string UngcSource = "J/AJ/145/101/catalog";
     private const string MccSource = "J/AJ/144/4/catalog";
-    private const string UngcName = "UNGC";
-    private const string MccName = "McConnachie 2012";
+    private const string UngcName = PeculiarVelocityRule.Ungc;
+    private const string MccName = PeculiarVelocityRule.McConnachie;
     private const double MatchArcsec = 60;
 
     private static readonly string[] UngcColumns =

@@ -25,7 +25,8 @@ public class ObjectInfoFormatterTests
         CzHelio = -300,
         Z = -300 / RedshiftMath.C,
         VCmb = -584,
-        PeculiarKms = -638,
+        PeculiarKms = -117,
+        LookbackGyr = Cosmo.LookbackTimeGyr(Cosmo.RedshiftAtComovingDistance(0.77)),
         Morphology = MorphologyParser.FromHyperLeda("Sb"),
         PaDeg = pa,
         AxisRatio = 0.33,
@@ -186,6 +187,31 @@ public class ObjectInfoFormatterTests
     {
         var row = Row(ObjectInfoFormatter.Format(M31(), Cosmo), "Peculiar velocity");
         Assert.Equal("PeculiarVelocity", row.GlossaryKey);
-        Assert.StartsWith("638 km/s toward us", row.Value);
+        Assert.StartsWith("117 km/s toward us", row.Value);
+        Assert.Contains("relative to the Local Group", row.Value);
+    }
+
+    private static Galaxy Cf4Galaxy(double distanceMpc, double? pec) => new()
+    {
+        Id = "2MRS:X", Name = "NGC 1", RaDeg = 150, DecDeg = 20, DistanceMpc = distanceMpc,
+        DistanceSource = DistanceSource.Measured, DistanceCatalog = "Cosmicflows-4",
+        CzHelio = 70 * distanceMpc, Z = 70 * distanceMpc / RedshiftMath.C, VCmb = 70 * distanceMpc + 200,
+        PeculiarKms = pec, Morphology = MorphologyParser.FromHyperLeda("Sb"),
+    };
+
+    [Fact]
+    public void Info_PeculiarVelocity_Cosmicflows4_NamesTheCmbFrame()
+    {
+        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(50, 470), Cosmo), "Peculiar velocity");
+        Assert.StartsWith("470 km/s away from us", row.Value);
+        Assert.Contains("relative to the cosmic microwave background", row.Value);
+    }
+
+    [Fact]
+    public void Info_PeculiarVelocity_Cosmicflows4_BeyondLimit_NotReliable()
+    {
+        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(200, null), Cosmo), "Peculiar velocity");
+        Assert.Equal("not reliable at this distance", row.Value);
+        Assert.Equal("PeculiarVelocity", row.GlossaryKey);
     }
 }

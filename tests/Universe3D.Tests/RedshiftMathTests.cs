@@ -19,13 +19,6 @@ public class RedshiftMathTests
         Assert.Equal(0, RedshiftMath.HelioToLocalGroup(0, 0, 0), 9);
     }
 
-    [Fact]
-    public void PeculiarVelocity_IsVcmbMinusH0d()
-    {
-        Assert.Equal(345, RedshiftMath.PeculiarVelocity(1500, 16.5, 0.005)!.Value, 9);
-        Assert.Null(RedshiftMath.PeculiarVelocity(1500, 16.5, 0.2));
-    }
-
     [Theory]
     [InlineData(-300, -0.001, "Blueshifted: approaching at 300 km/s")]
     [InlineData(1284, 0.00428, "Redshifted: receding at 1,284 km/s")]
