@@ -6,8 +6,17 @@
         WindowStartupLocation="CenterScreen">
     <DockPanel>
         <Border DockPanel.Dock="Top" Background="#181820" Padding="8,6">
-            <ComboBox x:Name="DataSetCombo" Width="220" HorizontalAlignment="Left"
-                      DisplayMemberPath="Label" SelectionChanged="DataSetCombo_SelectionChanged" />
+            <StackPanel Orientation="Horizontal">
+                <ComboBox x:Name="DataSetCombo" Width="220"
+                          DisplayMemberPath="Label" SelectionChanged="DataSetCombo_SelectionChanged" />
+                <TextBlock Text="Quasar limit" Foreground="#C0C0D0" VerticalAlignment="Center" Margin="16,0,6,0" />
+                <ComboBox x:Name="LimitCombo" Width="110" DisplayMemberPath="Label"
+                          SelectionChanged="LimitCombo_SelectionChanged" />
+                <CheckBox x:Name="SpinCheck" Content="Spin (perf test)" Foreground="#C0C0D0"
+                          VerticalAlignment="Center" Margin="16,0,0,0" Checked="SpinCheck_Changed" Unchecked="SpinCheck_Changed" />
+                <TextBlock x:Name="FpsText" Foreground="#80E0A0" VerticalAlignment="Center" Margin="16,0,0,0"
+                           FontFamily="Consolas" />
+            </StackPanel>
         </Border>
         <gl:GLWpfControl x:Name="GlControl"
                          MouseDown="Gl_MouseDown" MouseMove="Gl_MouseMove" MouseUp="Gl_MouseUp"

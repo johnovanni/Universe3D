@@ -1,9 +1,10 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Universe3D.Core.Catalogs;
 using Universe3D.Core.Coordinates;
+using Universe3D.Core.Display;
 using Universe3D.Core.Objects;
 using Universe3D.Rendering;
 
@@ -22,6 +23,13 @@ public partial class MainWindow : Window
         new(DataSetKind.Quasars, "Quasars"),
     };
 
+    private static readonly LimitChoice[] Limits =
+    {
+        new("100,000", 100_000),
+        new("250,000", 250_000),
+        new("All", int.MaxValue),
+    };
+
     private readonly IDataSetStore _store = new SnapshotStore();
     private readonly OrbitCamera _camera = new() { YawDeg = 30, PitchDeg = 20, DistanceMpc = 30 };
     private readonly GlHost _host;
@@ -31,6 +39,11 @@ public partial class MainWindow : Window
     private DataSet? _pendingUpload;
     private int _loadGeneration;
     private string _status = "Starting…";
+    private DataSet? _loaded;
+    private DataSetKind _loadedKind;
+    private bool _spin;
+    private readonly FrameTimer _timer = new();
+    private int _fpsTextTick;
 
     private Point _lastMouse;
     private MouseButton? _dragButton;
@@ -53,11 +66,16 @@ public partial class MainWindow : Window
         }
 
         PreviewKeyDown += OnPreviewKeyDown;
+        LimitCombo.ItemsSource = Limits;
+        LimitCombo.SelectedIndex = 1;
         DataSetCombo.ItemsSource = Choices;
         DataSetCombo.SelectedIndex = 0;
+        Loaded += (_, _) => StartBenchIfRequested();
     }
 
     private sealed record DataSetChoice(DataSetKind Kind, string Label);
+
+    private sealed record LimitChoice(string Label, int Count);
 
     private void OnContextReady(string glInfo)
     {
@@ -75,11 +93,50 @@ public partial class MainWindow : Window
             _points.Upload(_pendingUpload, Frame);
             _pendingUpload = null;
         }
-        _camera.Update(Math.Min(delta.TotalSeconds, 0.1));
+        _timer.Tick();
+        double dt = Math.Min(delta.TotalSeconds, 0.1);
+        _camera.Update(dt);
+        if (_spin) _camera.YawDeg = (_camera.YawDeg + SpinDegPerSecond * dt) % 360;
         _points.Render(_camera, viewport);
         _arrows.Render(_camera, viewport);
-        _host.Animating = _camera.IsFlying;
+        _host.Animating = _camera.IsFlying || _spin;
+        if (++_fpsTextTick % 30 == 0) UpdateFpsText();
     }
+
+    private const double SpinDegPerSecond = 45;
+
+    private void UpdateFpsText()
+    {
+        if (_timer.Count < 5) { FpsText.Text = ""; return; }
+        double ms = _timer.MedianMs;
+        string renderer = _host.GlInfo.Split('|').ElementAtOrDefault(1)?.Trim() ?? "";
+        var cls = GpuClassifier.Classify(renderer, ms);
+        FpsText.Text = $"{1000 / ms:F0} fps  {ms:F1} ms  ({cls})";
+    }
+
+    private void SpinCheck_Changed(object sender, RoutedEventArgs e)
+    {
+        _spin = SpinCheck.IsChecked == true;
+        _timer.Reset();
+        _host.Animating = _spin || _camera.IsFlying;
+        _host.RequestRender();
+    }
+
+    private void LimitCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) => ApplyLimit();
+
+    /// <summary>The quasar limit box: shows only the first N objects (snapshots are sorted brightest first).</summary>
+    private void ApplyLimit()
+    {
+        if (_loaded == null || LimitCombo.SelectedItem is not LimitChoice limit) return;
+        _pendingUpload = _loadedKind == DataSetKind.Quasars ? Limited(_loaded, limit.Count) : _loaded;
+        _host.RequestRender();
+    }
+
+    private static DataSet Limited(DataSet ds, int count) =>
+        count >= ds.Objects.Count
+            ? ds
+            : new DataSet(ds.Kind, ds.Objects.Take(count).ToList(), ds.ExcludedCount, ds.SkippedRows,
+                          ds.BuiltUtc, ds.SourceSummary);
 
     private async void DataSetCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
@@ -91,7 +148,11 @@ public partial class MainWindow : Window
         {
             var ds = await Task.Run(() => _store.Load(choice.Kind, out _));
             if (generation != _loadGeneration) return;
-            _pendingUpload = ds;
+            _loaded = ds;
+            _loadedKind = choice.Kind;
+            _timer.Reset();
+            var limit = LimitCombo.SelectedItem as LimitChoice;
+            _pendingUpload = choice.Kind == DataSetKind.Quasars && limit != null ? Limited(ds, limit.Count) : ds;
             _status = $"{choice.Label}: {ds.Objects.Count.ToString("N0", CultureInfo.InvariantCulture)} objects";
             _camera.FlyTo(new Vector3d(0, 0, 0), FramingDistance(ds));
             _host.Animating = true;
