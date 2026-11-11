@@ -179,7 +179,7 @@
 
                     <Expander Header="Catalogs" IsExpanded="False">
                         <StackPanel>
-                            <TextBlock Text="{Binding CatalogStatus}" Margin="0,0,0,4"/>
+                            <TextBlock Text="{Binding CatalogStatus}" TextWrapping="Wrap" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding CatalogSources}" Style="{StaticResource Muted}" Margin="0,0,0,6"/>
                             <Button Content="Download latest" Command="{Binding DownloadLatestCommand}"
                                     ToolTip="Rebuilds this data set from the VizieR catalogs (needs the internet; the quasars take a while). The current data stays until the download finishes. You can keep exploring meanwhile."/>
