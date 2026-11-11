@@ -80,6 +80,7 @@ public sealed class ShaderProgram : IDisposable
     public void Set(string name, uint v) => GL.Uniform1(Location(name), v);
     public void Set(string name, Vector2 v) => GL.Uniform2(Location(name), v);
     public void Set(string name, Vector3 v) => GL.Uniform3(Location(name), v);
+    public void Set(string name, Vector4 v) => GL.Uniform4(Location(name), v);
 
     public void Set(string name, Matrix4 m) => GL.UniformMatrix4(Location(name), false, ref m);
 

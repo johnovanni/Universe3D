@@ -22,6 +22,119 @@ public struct PointVertex
     public static readonly int SizeInBytes = Marshal.SizeOf<PointVertex>();
 }
 
+/// <summary>What <c>shapes.frag</c> draws for an instance.</summary>
+public enum ShapeKind : uint { Ellipsoid, Spiral, BarredSpiral, Lenticular, Irregular, Sphere }
+
+/// <summary>
+/// One ellipsoid impostor (galaxy shape, cluster sphere or the Milky Way), attribute locations 1–9 in that order.
+/// The ellipsoid has semi-axes <see cref="SemiAxesMpc"/> along its local x, y, z, rotated into the display frame.
+/// </summary>
+[StructLayout(LayoutKind.Sequential, Pack = 4)]
+public struct ShapeInstance
+{
+    public Vector3 PosHigh;
+    public Vector3 PosLow;
+    /// <summary>Quaternion (x, y, z, w) taking local axes to the display frame.</summary>
+    public Vector4 Rotation;
+    public Vector3 SemiAxesMpc;
+    public ShapeKind Kind;
+    public uint TypeCode;
+    /// <summary>Observed velocity, km/s; NaN for none.</summary>
+    public float Cz;
+    /// <summary>0–1, varies the procedural pattern.</summary>
+    public float Seed;
+    public float DistanceMpc;
+
+    public static readonly int SizeInBytes = Marshal.SizeOf<ShapeInstance>();
+}
+
+/// <summary>A corner quad (location 0) drawn once per <see cref="ShapeInstance"/> (locations 1–9).</summary>
+public sealed class ShapeInstanceBuffer : IDisposable
+{
+    private static readonly float[] Corners = { -1, -1, 1, -1, -1, 1, 1, 1 };
+
+    private int _vao, _cornerVbo, _instanceVbo, _capacity;
+
+    /// <summary>Requires a current GL context.</summary>
+    public ShapeInstanceBuffer()
+    {
+        _vao = GL.GenVertexArray();
+        _cornerVbo = GL.GenBuffer();
+        _instanceVbo = GL.GenBuffer();
+        GL.BindVertexArray(_vao);
+
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _cornerVbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, Corners.Length * sizeof(float), Corners, BufferUsageHint.StaticDraw);
+        GL.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
+
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _instanceVbo);
+        int stride = ShapeInstance.SizeInBytes;
+        Float(1, 3, nameof(ShapeInstance.PosHigh));
+        Float(2, 3, nameof(ShapeInstance.PosLow));
+        Float(3, 4, nameof(ShapeInstance.Rotation));
+        Float(4, 3, nameof(ShapeInstance.SemiAxesMpc));
+        UInt(5, nameof(ShapeInstance.Kind));
+        UInt(6, nameof(ShapeInstance.TypeCode));
+        Float(7, 1, nameof(ShapeInstance.Cz));
+        Float(8, 1, nameof(ShapeInstance.Seed));
+        Float(9, 1, nameof(ShapeInstance.DistanceMpc));
+
+        GL.BindVertexArray(0);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+        void Float(int location, int size, string field)
+        {
+            GL.EnableVertexAttribArray(location);
+            GL.VertexAttribPointer(location, size, VertexAttribPointerType.Float, false, stride, Offset(field));
+            GL.VertexAttribDivisor(location, 1);
+        }
+
+        void UInt(int location, string field)
+        {
+            GL.EnableVertexAttribArray(location);
+            GL.VertexAttribIPointer(location, 1, VertexAttribIntegerType.UnsignedInt, stride, (IntPtr)Offset(field));
+            GL.VertexAttribDivisor(location, 1);
+        }
+
+        static int Offset(string field) => (int)Marshal.OffsetOf<ShapeInstance>(field);
+    }
+
+    public int Count { get; private set; }
+
+    /// <summary>Replaces the instances with the first <paramref name="count"/> items.</summary>
+    public void Upload(ShapeInstance[] items, int count)
+    {
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _instanceVbo);
+        if (count > _capacity)
+        {
+            _capacity = Math.Max(count, 2 * _capacity);
+            GL.BufferData(BufferTarget.ArrayBuffer, _capacity * ShapeInstance.SizeInBytes, IntPtr.Zero,
+                          BufferUsageHint.DynamicDraw);
+        }
+        if (count > 0)
+            GL.BufferSubData(BufferTarget.ArrayBuffer, IntPtr.Zero, count * ShapeInstance.SizeInBytes, items);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        Count = count;
+    }
+
+    public void Draw()
+    {
+        if (Count == 0) return;
+        GL.BindVertexArray(_vao);
+        GL.DrawArraysInstanced(PrimitiveType.TriangleStrip, 0, 4, Count);
+        GL.BindVertexArray(0);
+    }
+
+    public void Dispose()
+    {
+        if (_vao != 0) GL.DeleteVertexArray(_vao);
+        if (_cornerVbo != 0) GL.DeleteBuffer(_cornerVbo);
+        if (_instanceVbo != 0) GL.DeleteBuffer(_instanceVbo);
+        _vao = _cornerVbo = _instanceVbo = 0;
+    }
+}
+
 /// <summary>The point vertex buffer, shared by the point cloud and the velocity arrows.</summary>
 public sealed class GpuBuffers : IDisposable
 {

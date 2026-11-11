@@ -31,6 +31,11 @@ public sealed class Projector
         (_m30, _m31, _m32, _m33) = (m.M41, m.M42, m.M43, m.M44);
     }
 
+    public Vector3d Eye => _eye;
+    /// <summary>Unit view direction.</summary>
+    public Vector3d Forward => _forward;
+    /// <summary>Pixels per unit length at unit depth (viewport height / (2 tan(fov / 2))).</summary>
+    public double FocalPx => _focalPx;
     public double WidthPx => _width;
     public double HeightPx => _height;
 

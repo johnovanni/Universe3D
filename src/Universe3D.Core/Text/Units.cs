@@ -5,6 +5,9 @@ namespace Universe3D.Core.Text;
 public static class Units
 {
     private const double MlyPerMpc = 3.2616;
+
+    /// <summary>Light-years per megaparsec.</summary>
+    public const double LyPerMpc = MlyPerMpc * 1e6;
     private static readonly string[] LyUnits = { "ly", "kly", "Mly", "Gly" };
 
     /// <summary>Distance in light-years with 3 significant digits, e.g. "2.51 Mly".</summary>

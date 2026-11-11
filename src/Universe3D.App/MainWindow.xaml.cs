@@ -13,7 +13,7 @@ namespace Universe3D.App;
 /// <summary>Minimal host: a data-set combo box and the GL view. A = arrows, V = color mode, wheel/drag = camera.</summary>
 public partial class MainWindow : Window
 {
-    private const DisplayFrame Frame = DisplayFrame.Supergalactic;
+    private DisplayFrame _frame = DisplayFrame.Supergalactic;
 
     private static readonly DataSetChoice[] Choices =
     {
@@ -36,6 +36,11 @@ public partial class MainWindow : Window
 
     private PointCloudRenderer? _points;
     private VelocityArrowRenderer? _arrows;
+    private ShapeRenderer? _shapes;
+    private ClusterRenderer? _clusters;
+    private MilkyWayRenderer? _milkyWay;
+    private ScaleRingRenderer? _rings;
+    private readonly List<TextBlock> _ringLabels = new();
     private DataSet? _pendingUpload;
     private int _loadGeneration;
     private string _status = "Starting…";
@@ -69,7 +74,7 @@ public partial class MainWindow : Window
         LimitCombo.ItemsSource = Limits;
         LimitCombo.SelectedIndex = 1;
         DataSetCombo.ItemsSource = Choices;
-        DataSetCombo.SelectedIndex = 0;
+        DataSetCombo.SelectedIndex = ParseViewArgs();
         Loaded += (_, _) => StartBenchIfRequested();
     }
 
@@ -82,25 +87,86 @@ public partial class MainWindow : Window
         var buffers = new GpuBuffers();
         _points = new PointCloudRenderer(buffers);
         _arrows = new VelocityArrowRenderer(_points);
+        _shapes = new ShapeRenderer(_points);
+        _clusters = new ClusterRenderer(_points);
+        _milkyWay = new MilkyWayRenderer();
+        _milkyWay.Upload(_frame);
+        _rings = new ScaleRingRenderer();
+        ApplyLayers();
         UpdateTitle();
     }
 
     private void OnDraw(TimeSpan delta, Size viewport)
     {
-        if (_points == null || _arrows == null) return;
+        if (_points == null || _arrows == null || _shapes == null || _clusters == null || _milkyWay == null ||
+            _rings == null) return;
         if (_pendingUpload != null)
         {
-            _points.Upload(_pendingUpload, Frame);
+            _points.Upload(_pendingUpload, _frame);
+            _shapes.Upload(_pendingUpload, _frame);
+            _clusters.Upload(_pendingUpload, _frame);
             _pendingUpload = null;
         }
         _timer.Tick();
         double dt = Math.Min(delta.TotalSeconds, 0.1);
         _camera.Update(dt);
         if (_spin) _camera.YawDeg = (_camera.YawDeg + SpinDegPerSecond * dt) % 360;
+
+        // Select the shapes first: the points fade out where the shapes fade in.
+        _shapes.Update(_camera, viewport);
+        _points.ShapeFadePx = _shapes.FadeRangePx;
+        _points.GrowWithDiameter = !(_clusters.Visible && _clusters.Count > 0);
+
+        _rings.Render(_camera, viewport);
+        _milkyWay.Render(_camera, viewport);
+        _clusters.Render(_camera, viewport);
         _points.Render(_camera, viewport);
+        _shapes.Render(_camera, viewport);
         _arrows.Render(_camera, viewport);
+        UpdateRingLabels(viewport);
         _host.Animating = _camera.IsFlying || _spin;
         if (++_fpsTextTick % 30 == 0) UpdateFpsText();
+    }
+
+    private void Layer_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_points == null) return; // still initializing
+        ApplyLayers();
+        UpdateTitle();
+        _host.RequestRender();
+    }
+
+    private void ApplyLayers()
+    {
+        if (_shapes != null) _shapes.Visible = ShapesCheck.IsChecked == true;
+        if (_clusters != null) _clusters.Visible = SpheresCheck.IsChecked == true;
+        if (_milkyWay != null) _milkyWay.Visible = MilkyWayCheck.IsChecked == true;
+        if (_rings != null) _rings.Visible = RingsCheck.IsChecked == true;
+    }
+
+    /// <summary>Places the ring labels; the renderer reports framebuffer pixels, the overlay uses DIPs.</summary>
+    private void UpdateRingLabels(Size viewport)
+    {
+        var labels = _rings?.Labels ?? Array.Empty<RingLabel>();
+        double scale = viewport.Width > 0 ? GlControl.ActualWidth / viewport.Width : 1;
+        while (_ringLabels.Count < labels.Count)
+        {
+            var tb = new TextBlock { Foreground = new System.Windows.Media.SolidColorBrush(
+                System.Windows.Media.Color.FromRgb(0x8C, 0xAE, 0xDA)), FontSize = 12 };
+            _ringLabels.Add(tb);
+            Overlay.Children.Add(tb);
+        }
+        for (int i = 0; i < _ringLabels.Count; i++)
+        {
+            var tb = _ringLabels[i];
+            if (i >= labels.Count) { tb.Visibility = Visibility.Collapsed; continue; }
+            tb.Text = labels[i].Text;
+            tb.Visibility = Visibility.Visible;
+            tb.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+            double x = labels[i].ScreenPx.X * scale + 4, y = labels[i].ScreenPx.Y * scale + 2;
+            Canvas.SetLeft(tb, Math.Min(x, Overlay.ActualWidth - tb.DesiredSize.Width - 4));
+            Canvas.SetTop(tb, Math.Min(y, Overlay.ActualHeight - tb.DesiredSize.Height - 2));
+        }
     }
 
     private const double SpinDegPerSecond = 45;
@@ -111,7 +177,7 @@ public partial class MainWindow : Window
         double ms = _timer.MedianMs;
         string renderer = _host.GlInfo.Split('|').ElementAtOrDefault(1)?.Trim() ?? "";
         var cls = GpuClassifier.Classify(renderer, ms);
-        FpsText.Text = $"{1000 / ms:F0} fps  {ms:F1} ms  ({cls})";
+        FpsText.Text = $"{1000 / ms:F0} fps  {ms:F1} ms  ({cls})  shapes {_shapes?.ShapeCount ?? 0}";
     }
 
     private void SpinCheck_Changed(object sender, RoutedEventArgs e)
@@ -154,7 +220,7 @@ public partial class MainWindow : Window
             var limit = LimitCombo.SelectedItem as LimitChoice;
             _pendingUpload = choice.Kind == DataSetKind.Quasars && limit != null ? Limited(ds, limit.Count) : ds;
             _status = $"{choice.Label}: {ds.Objects.Count.ToString("N0", CultureInfo.InvariantCulture)} objects";
-            _camera.FlyTo(new Vector3d(0, 0, 0), FramingDistance(ds));
+            if (!TryApplyView(ds)) _camera.FlyTo(new Vector3d(0, 0, 0), FramingDistance(ds));
             _host.Animating = true;
             _host.RequestRender();
         }

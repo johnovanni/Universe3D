@@ -143,7 +143,8 @@ public sealed class OrbitCamera
 
     private double FovRad => FieldOfViewDeg * Math.PI / 180;
 
-    private (Vector3d right, Vector3d up) ScreenAxes()
+    /// <summary>Unit screen-right and screen-up directions in the display frame.</summary>
+    internal (Vector3d right, Vector3d up) ScreenAxes()
     {
         var forward = -Backward;
         var right = forward.Cross(new Vector3d(0, 0, 1)).Normalized();

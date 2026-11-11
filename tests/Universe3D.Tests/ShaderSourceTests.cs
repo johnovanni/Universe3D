@@ -12,6 +12,13 @@ public class ShaderSourceTests
     [InlineData("arrows.vert")]
     [InlineData("arrows.geom")]
     [InlineData("arrows.frag")]
+    [InlineData("shapes.vert")]
+    [InlineData("shapes.frag")]
+    [InlineData("clusters.frag")]
+    [InlineData("rings.vert")]
+    [InlineData("rings.frag")]
+    [InlineData("marker.vert")]
+    [InlineData("marker.frag")]
     public void Shader_IsEmbeddedAsciiGlsl410Core(string name)
     {
         string source = ShaderProgram.ReadSource(name);

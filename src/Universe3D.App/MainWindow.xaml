@@ -14,12 +14,24 @@
                           SelectionChanged="LimitCombo_SelectionChanged" />
                 <CheckBox x:Name="SpinCheck" Content="Spin (perf test)" Foreground="#C0C0D0"
                           VerticalAlignment="Center" Margin="16,0,0,0" Checked="SpinCheck_Changed" Unchecked="SpinCheck_Changed" />
+                <CheckBox x:Name="ShapesCheck" Content="Shapes" IsChecked="True" Foreground="#C0C0D0"
+                          VerticalAlignment="Center" Margin="16,0,0,0" Checked="Layer_Changed" Unchecked="Layer_Changed" />
+                <CheckBox x:Name="SpheresCheck" Content="Cluster spheres" IsChecked="True" Foreground="#C0C0D0"
+                          VerticalAlignment="Center" Margin="10,0,0,0" Checked="Layer_Changed" Unchecked="Layer_Changed" />
+                <CheckBox x:Name="MilkyWayCheck" Content="Milky Way" IsChecked="True" Foreground="#C0C0D0"
+                          VerticalAlignment="Center" Margin="10,0,0,0" Checked="Layer_Changed" Unchecked="Layer_Changed" />
+                <CheckBox x:Name="RingsCheck" Content="Scale rings" IsChecked="True" Foreground="#C0C0D0"
+                          VerticalAlignment="Center" Margin="10,0,0,0" Checked="Layer_Changed" Unchecked="Layer_Changed" />
                 <TextBlock x:Name="FpsText" Foreground="#80E0A0" VerticalAlignment="Center" Margin="16,0,0,0"
                            FontFamily="Consolas" />
             </StackPanel>
         </Border>
-        <gl:GLWpfControl x:Name="GlControl"
-                         MouseDown="Gl_MouseDown" MouseMove="Gl_MouseMove" MouseUp="Gl_MouseUp"
-                         MouseWheel="Gl_MouseWheel" />
+        <Grid>
+            <gl:GLWpfControl x:Name="GlControl"
+                             MouseDown="Gl_MouseDown" MouseMove="Gl_MouseMove" MouseUp="Gl_MouseUp"
+                             MouseWheel="Gl_MouseWheel" />
+            <!-- Ring labels (the full label overlay arrives with the UI task). -->
+            <Canvas x:Name="Overlay" IsHitTestVisible="False" ClipToBounds="True" />
+        </Grid>
     </DockPanel>
 </Window>

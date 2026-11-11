@@ -22,6 +22,8 @@ uniform vec3 u_typeColors[16];
 uniform vec2 u_magRange;     // (bright, faint)
 uniform float u_pointScale;
 uniform float u_alpha;
+uniform vec2 u_fadeRange;     // px; galaxies cross-fade to shapes: alpha * (1 - smoothstep(x, y, px)); (0, 0) = off
+uniform int u_growWithDiameter;
 
 out vec4 v_color;
 
@@ -59,10 +61,20 @@ void main()
         size = mix(6.0, 1.75, t);
     }
     size *= u_pointScale;
-    if (a_diameter > 0.0 && gl_Position.w > 0.0)
-        size = max(size, min(a_diameter * u_focalPx / gl_Position.w, 64.0));
+    // Projected diameter, the same measure ShapeRenderer selects shapes by.
+    float px = (a_diameter > 0.0 && gl_Position.w > 0.0) ? a_diameter * u_focalPx / gl_Position.w : 0.0;
+    float fade = (u_fadeRange.y > 0.0 && a_diameter > 0.0) ? smoothstep(u_fadeRange.x, u_fadeRange.y, px) : 0.0;
+    if (fade >= 1.0)
+    {
+        gl_Position = vec4(2.0, 2.0, 2.0, 1.0);   // fully replaced by its shape
+        gl_PointSize = 0.0;
+        v_color = vec4(0.0);
+        return;
+    }
+    if (u_growWithDiameter != 0)
+        size = max(size, min(px, 64.0));
     gl_PointSize = max(size, 1.0);
 
     vec3 rgb = u_colorMode == 1 ? velocityColor(a_cz) : u_typeColors[min(a_typeCode, 15u)];
-    v_color = vec4(rgb, u_alpha);
+    v_color = vec4(rgb, u_alpha * (1.0 - fade));
 }

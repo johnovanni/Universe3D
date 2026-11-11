@@ -43,6 +43,18 @@ public sealed class PointCloudRenderer : IDisposable
 
     public double PointScale { get; set; } = 1.0;
 
+    /// <summary>
+    /// Shape cross-fade window (px) from <see cref="ShapeRenderer.FadeRangePx"/>: a galaxy with a diameter is drawn
+    /// with alpha × (1 − smoothstep(x, y, projected diameter)). (0, 0) turns the fade off.
+    /// </summary>
+    public Vector2 ShapeFadePx { get; set; }
+
+    /// <summary>When true a sprite grows with its projected diameter (up to 64 px); off while cluster spheres show it.</summary>
+    public bool GrowWithDiameter { get; set; } = true;
+
+    /// <summary>The type colors of the loaded data set, by <c>TypeCode</c>.</summary>
+    internal Vector3[] Palette => _palette;
+
     /// <summary>CPU mirror of the shader filter, for picking.</summary>
     public bool IsVisible(int index)
     {
@@ -105,6 +117,8 @@ public sealed class PointCloudRenderer : IDisposable
         _program.Set("u_magRange", _magRange);
         _program.Set("u_pointScale", (float)PointScale);
         _program.Set("u_alpha", additive ? 0.55f : 0.9f);
+        _program.Set("u_fadeRange", ShapeFadePx);
+        _program.Set("u_growWithDiameter", GrowWithDiameter ? 1 : 0);
 
         GL.BindVertexArray(_vao);
         GL.DrawArrays(PrimitiveType.Points, 0, Buffers.PointCount);
