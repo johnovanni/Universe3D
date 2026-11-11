@@ -4,8 +4,10 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Universe3D.Core.Catalogs;
 using Universe3D.Core.Cosmology;
+using Universe3D.Core.Display;
 using Universe3D.Core.Objects;
 using Universe3D.Core.Text;
+using Universe3D.Rendering;
 
 namespace Universe3D.App.ViewModels;
 
@@ -20,14 +22,17 @@ public sealed record SearchResult(CosmicObject Object, string Name, string Detai
 public sealed partial class MainViewModel : ObservableObject
 {
     private readonly IDataSetStore _store;
+    private readonly DownloadService _downloads;
+    private CancellationTokenSource? _downloadCts;
     private DataSet? _loaded;
     private Task<NameSearch>? _searchIndex;
     private int _loadGeneration, _searchGeneration;
     private bool _preloadStarted;
 
-    public MainViewModel(IDataSetStore store)
+    public MainViewModel(IDataSetStore store, DownloadService downloads)
     {
         _store = store;
+        _downloads = downloads;
         DataSets = Enum.GetValues<DataSetKind>().Select(k => new DataSetViewModel(k)).ToList();
         Filters.PropertyChanged += OnFiltersChanged;
     }
@@ -62,6 +67,21 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _warning = "";
     [ObservableProperty] private string _catalogStatus = "";
     [ObservableProperty] private string _catalogSources = "";
+
+    /// <summary>Progress, result or failure of "Download latest"; also shown in the status bar.</summary>
+    [ObservableProperty] private string _downloadStatus = "";
+
+    /// <summary>True while a download runs (one at a time).</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(DownloadLatestCommand), nameof(CancelDownloadCommand),
+                                nameof(UseBuiltInCommand))]
+    private bool _isDownloading;
+
+    /// <summary>"reduced defaults for this GPU", shown once in the status bar.</summary>
+    [ObservableProperty] private string _gpuNote = "";
+
+    /// <summary>"running on a USB display adapter" while the window is on one.</summary>
+    [ObservableProperty] private string _adapterNote = "";
 
     /// <summary>Fly the camera to an object (double-click, search, "Fly to").</summary>
     public event Action<CosmicObject>? FlyToRequested;
@@ -105,14 +125,78 @@ public sealed partial class MainViewModel : ObservableObject
     {
         if (SelectedDataSet is not { } dsvm) return;
         _store.ClearDownloaded(dsvm.Kind);
+        DownloadStatus = "";
         dsvm.Forget();
         await ActivateAsync(dsvm);
     }
 
-    private bool CanUseBuiltIn() => SelectedDataSet is { FromCache: true };
+    private bool CanUseBuiltIn() => SelectedDataSet is { FromCache: true } && !IsDownloading;
+
+    /// <summary>
+    /// Rebuilds the selected data set from VizieR in the background. The view is replaced only when the build
+    /// completes and that data set is the one on screen; otherwise the new copy loads when it is next selected.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanDownload))]
+    private async Task DownloadLatestAsync()
+    {
+        if (SelectedDataSet is not { } dsvm) return;
+        var kind = dsvm.Kind;
+        string title = dsvm.Title;
+        using var cts = new CancellationTokenSource();
+        _downloadCts = cts;
+        IsDownloading = true;
+        DownloadStatus = $"Downloading {title}…";
+        var progress = new Progress<string>(text => DownloadStatus = $"{title}: {text}");
+        try
+        {
+            var ds = await Task.Run(() => _downloads.DownloadAsync(kind, progress, cts.Token));
+            DownloadStatus = $"Downloaded {title}: {ds.Objects.Count:N0} objects.";
+            var entry = DataSets.First(d => d.Kind == kind);
+            entry.Forget();
+            if (SelectedDataSet?.Kind == kind) await ActivateAsync(entry);
+            else entry.Summary = "Downloaded; loads when selected";
+        }
+        catch (OperationCanceledException)
+        {
+            DownloadStatus = $"Download of {title} cancelled. Nothing was changed.";
+        }
+        catch (VizierUnavailableException ex)
+        {
+            DownloadStatus = $"Could not download {title}; the existing data was kept. {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            DownloadStatus = $"Download of {title} failed; the existing data was kept. {ex.Message}";
+        }
+        finally
+        {
+            _downloadCts = null;
+            IsDownloading = false;
+        }
+    }
+
+    private bool CanDownload() => !IsDownloading;
+
+    /// <summary>
+    /// Applies the defaults for the GPU class found at startup (spec §1). Settings the user already changed are kept;
+    /// the reduced-defaults note is shown once, then cleared.
+    /// </summary>
+    public async void ApplyGpuDefaults(GpuDefaults defaults)
+    {
+        if (Filters.QuasarLimit == FilterOptions.DefaultQuasarLimit) Filters.QuasarLimit = defaults.QuasarLimit;
+        if (Filters.ShapeCap == ShapeRenderer.RecommendedCap) Filters.ShapeCap = defaults.ShapeCap;
+        if (!defaults.Reduced) return;
+        GpuNote = "reduced defaults for this GPU";
+        await Task.Delay(TimeSpan.FromSeconds(30));
+        GpuNote = "";
+    }
+
+    [RelayCommand(CanExecute = nameof(IsDownloading))]
+    private void CancelDownload() => _downloadCts?.Cancel();
 
     partial void OnSelectedDataSetChanged(DataSetViewModel? value)
     {
+        if (!IsDownloading) DownloadStatus = "";
         if (value != null) _ = ActivateAsync(value);
     }
 

@@ -1,9 +1,10 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Universe3D.App.Controllers;
 using Universe3D.App.ViewModels;
 using Universe3D.Core.Catalogs;
+using Universe3D.Core.Display;
 
 namespace Universe3D.App;
 
@@ -12,25 +13,45 @@ public partial class MainWindow : Window
 {
     private readonly MainViewModel _vm;
     private readonly SceneController _scene;
+    private IntPtr _monitor;
 
-    public MainWindow(IDataSetStore store)
+    public MainWindow(IDataSetStore store, DownloadService downloads)
     {
         InitializeComponent();
         // Fit the default size to the screen's work area (laptops at 125–150% scaling are smaller than 1500×920).
         var work = SystemParameters.WorkArea;
         Width = Math.Min(Width, work.Width);
         Height = Math.Min(Height, work.Height);
-        _vm = new MainViewModel(store);
+        _vm = new MainViewModel(store, downloads);
         DataContext = _vm;
         _scene = new SceneController(GlControl, Overlay, _vm);
         int first = ParseViewArgs();
         _scene.Start();
-        Closing += (_, _) => _scene.Dispose();
+        Closing += (_, _) =>
+        {
+            _vm.CancelDownloadCommand.Execute(null);
+            _scene.Dispose();
+        };
+        LocationChanged += (_, _) => CheckAdapter();
+        DpiChanged += (_, _) => CheckAdapter();
         Loaded += (_, _) =>
         {
+            CheckAdapter();
             _vm.SelectedDataSet = _vm.DataSets[first];
             StartBenchIfRequested();
         };
+    }
+
+    /// <summary>Warns in the status bar while the window is on a USB display adapter (spec §1); re-checked when it moves.</summary>
+    private void CheckAdapter()
+    {
+        IntPtr monitor = MonitorAdapter.MonitorOf(this);
+        if (monitor == _monitor) return;
+        _monitor = monitor;
+        string? adapter = MonitorAdapter.AdapterString(monitor);
+        _vm.AdapterNote = adapter != null && DisplayAdapterInfo.IsUsbDisplayAdapter(adapter)
+            ? "running on a USB display adapter"
+            : "";
     }
 
     private void OnPreviewKeyDown(object sender, KeyEventArgs e)

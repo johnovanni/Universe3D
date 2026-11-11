@@ -1,3 +1,4 @@
+using System.Net.Http;
 using System.Windows;
 using Universe3D.Core.Catalogs;
 
@@ -10,7 +11,10 @@ public partial class App : Application
     {
         base.OnStartup(e);
         IDataSetStore store = new SnapshotStore();
-        var window = new MainWindow(store);
+        // A full quasar catalog download is large, so allow a long timeout; the Cancel button ends it sooner.
+        var http = new HttpClient { Timeout = TimeSpan.FromMinutes(15) };
+        var downloads = new DownloadService(store, new VizierClient(http));
+        var window = new MainWindow(store, downloads);
         MainWindow = window;
         window.Show();
     }

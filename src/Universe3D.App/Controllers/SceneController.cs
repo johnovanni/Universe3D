@@ -51,7 +51,11 @@ public sealed partial class SceneController : IDisposable
         _host = new GlHost(control);
         _host.ContextReady += OnContextReady;
         _host.Draw += OnDraw;
-        _host.FrameFailed += ex => ShowError("Rendering stopped", ex);
+        _host.FrameFailed += ex =>
+        {
+            if (ex is GlUnsupportedException gl) ShowGlFailure(gl.Renderer, gl.Version, null);
+            else ShowError("Rendering stopped", ex);
+        };
 
         vm.PropertyChanged += (_, e) =>
         {
@@ -111,7 +115,7 @@ public sealed partial class SceneController : IDisposable
         }
         catch (Exception ex)
         {
-            ShowError("Could not create an OpenGL 4.1 core context", ex);
+            ShowGlFailure(null, null, ex.Message);
         }
     }
 
@@ -169,6 +173,7 @@ public sealed partial class SceneController : IDisposable
 
     private void OnContextReady(string glInfo)
     {
+        RequireOpenGl41(glInfo);
         _buffers = new GpuBuffers();
         _points = new PointCloudRenderer(_buffers);
         _arrows = new VelocityArrowRenderer(_points);
@@ -176,6 +181,7 @@ public sealed partial class SceneController : IDisposable
         _clusters = new ClusterRenderer(_points);
         _milkyWay = new MilkyWayRenderer();
         _rings = new ScaleRingRenderer();
+        BeginGpuClassification(glInfo);
     }
 
     private void OnDraw(TimeSpan delta, Size viewport)
@@ -205,7 +211,8 @@ public sealed partial class SceneController : IDisposable
         _arrows.Render(Camera, viewport);
         UpdateOverlay(viewport);
 
-        _host.Animating = Camera.IsFlying || _spin;
+        CalibrationStep();
+        _host.Animating = Camera.IsFlying || _spin || _calibrating;
         if (++_frames % StatusEveryFrames == 0 || !_host.Animating) UpdateStatus();
     }
 
@@ -249,6 +256,7 @@ public sealed partial class SceneController : IDisposable
         points.TypeMask = f.TypeMask;
         points.ColorMode = f.ColorMode;
         shapes.Visible = f.ShowShapes;
+        shapes.Cap = f.ShapeCap;
         clusters.Visible = f.ShowShapes;
         milkyWay.Visible = f.ShowMilkyWay;
         rings.Visible = f.ShowRings;

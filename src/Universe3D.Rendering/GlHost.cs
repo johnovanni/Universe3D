@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -39,6 +40,15 @@ public sealed class GlHost
     public Exception? Failure { get; private set; }
 
     public string GlInfo { get; private set; } = "";
+
+    /// <summary>
+    /// When true, each frame waits for the GPU to finish (glFinish) so <see cref="LastDrawMs"/> is the real cost of
+    /// the frame rather than the display's refresh interval. Used briefly at startup to classify the GPU.
+    /// </summary>
+    public bool MeasureDraw { get; set; }
+
+    /// <summary>CPU + GPU time of the last <see cref="Draw"/> in milliseconds; only meaningful while <see cref="MeasureDraw"/>.</summary>
+    public double LastDrawMs { get; private set; }
 
     /// <summary>Render every composition frame while true (e.g. during a camera flight).</summary>
     public bool Animating
@@ -104,7 +114,16 @@ public sealed class GlHost
             GL.ClearColor(0.01f, 0.01f, 0.03f, 1f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Disable(EnableCap.DepthTest);
-            if (w > 0 && h > 0) Draw?.Invoke(delta, new Size(w, h));
+            if (w > 0 && h > 0)
+            {
+                long t0 = Stopwatch.GetTimestamp();
+                Draw?.Invoke(delta, new Size(w, h));
+                if (MeasureDraw)
+                {
+                    GL.Finish();
+                    LastDrawMs = Stopwatch.GetElapsedTime(t0).TotalMilliseconds;
+                }
+            }
             var error = GL.GetError();
             if (error != OpenTK.Graphics.OpenGL4.ErrorCode.NoError)
                 throw new InvalidOperationException($"OpenGL error {error}.");

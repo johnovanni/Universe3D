@@ -64,7 +64,15 @@ public sealed partial class FilterOptions : ObservableObject
     private bool _peculiarAvailable = true;
 
     [ObservableProperty] private int _quasarLimit = DefaultQuasarLimit;
+
+    /// <summary>Most galaxy shapes drawn at once (20,000, or 5,000 on a minimum-class GPU).</summary>
+    [ObservableProperty] private int _shapeCap = ShapeRenderer.RecommendedCap;
     [ObservableProperty] private bool _isQuasarLimitVisible;
+
+    public IReadOnlyList<LimitOption> ShapeCapOptions { get; } = new LimitOption[]
+    {
+        new("1,000", 1_000), new("5,000", 5_000), new("20,000", 20_000), new("50,000", 50_000),
+    };
 
     /// <summary>Objects farther than this are hidden; +∞ with the slider at its top.</summary>
     public double MaxDistanceMpc => DistanceLog >= DistanceLogMax - 1e-9 ? double.PositiveInfinity : Math.Pow(10, DistanceLog);

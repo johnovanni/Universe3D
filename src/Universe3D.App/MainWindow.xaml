@@ -1,4 +1,4 @@
-﻿<Window x:Class="Universe3D.App.MainWindow"
+<Window x:Class="Universe3D.App.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:gl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
@@ -26,6 +26,15 @@
                     <TextBlock Text="{Binding ObjectsStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"/>
                     <TextBlock Text="{Binding ExcludedStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
                                ToolTip="{res:Glossary NoValidDistance}"/>
+                    <TextBlock Text="{Binding DownloadStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
+                               MaxWidth="560" TextTrimming="CharacterEllipsis" ToolTip="{Binding DownloadStatus}"
+                               Visibility="{Binding DownloadStatus, Converter={StaticResource EmptyToCollapsed}}"/>
+                    <TextBlock Text="{Binding GpuNote}" Foreground="{StaticResource WarningBrush}" FontSize="11" Margin="16,0,0,0"
+                               ToolTip="This GPU is below the recommended class, so the quasar limit and the galaxy-shape limit start lower. Both can be changed in the left panel."
+                               Visibility="{Binding GpuNote, Converter={StaticResource EmptyToCollapsed}}"/>
+                    <TextBlock Text="{Binding AdapterNote}" Foreground="{StaticResource WarningBrush}" FontSize="11" Margin="16,0,0,0"
+                               ToolTip="USB display adapters (DisplayLink and similar) copy every frame through the CPU, so the 3D view may be slow or may not start. Move the window to a screen driven directly by the GPU, such as the laptop's own display."
+                               Visibility="{Binding AdapterNote, Converter={StaticResource EmptyToCollapsed}}"/>
                     <TextBlock Text="{Binding Warning}" Foreground="{StaticResource WarningBrush}" FontSize="11" Margin="16,0,0,0"
                                Visibility="{Binding Warning, Converter={StaticResource EmptyToCollapsed}}"/>
                 </StackPanel>
@@ -128,6 +137,10 @@
                             <CheckBox Content="Names" IsChecked="{Binding ShowNames}"/>
                             <CheckBox Content="Scale rings" IsChecked="{Binding ShowRings}" ToolTip="{res:Glossary ScaleRings}"/>
                             <CheckBox Content="Milky Way" IsChecked="{Binding ShowMilkyWay}" ToolTip="{res:Glossary MilkyWay}"/>
+                            <TextBlock Text="Most galaxy shapes drawn" Style="{StaticResource FieldLabel}"
+                                       ToolTip="Drawing every galaxy as a shape is the heaviest part of the picture, so the largest on screen are drawn first, up to this many. Lower it if the view feels slow."/>
+                            <ListBox ItemsSource="{Binding ShapeCapOptions}" SelectedValuePath="Count"
+                                     SelectedValue="{Binding ShapeCap}" DisplayMemberPath="Label"/>
                         </StackPanel>
                     </Expander>
 
@@ -165,8 +178,13 @@
                         <StackPanel>
                             <TextBlock Text="{Binding CatalogStatus}" Margin="0,0,0,4"/>
                             <TextBlock Text="{Binding CatalogSources}" Style="{StaticResource Muted}" Margin="0,0,0,6"/>
-                            <Button Content="Download latest" IsEnabled="False"
-                                    ToolTip="Rebuilds this data set from VizieR. Not available in this version yet."/>
+                            <Button Content="Download latest" Command="{Binding DownloadLatestCommand}"
+                                    ToolTip="Rebuilds this data set from the VizieR catalogs (needs the internet; the quasars take a while). The current data stays until the download finishes. You can keep exploring meanwhile."/>
+                            <Button Content="Cancel download" Command="{Binding CancelDownloadCommand}"
+                                    Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVisibility}}"
+                                    ToolTip="Stop the download. The existing data is kept."/>
+                            <TextBlock Text="{Binding DownloadStatus}" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,6,0,6"
+                                       Visibility="{Binding DownloadStatus, Converter={StaticResource EmptyToCollapsed}}"/>
                             <Button Content="Use built-in snapshot" Command="{Binding UseBuiltInCommand}"
                                     ToolTip="Forget the downloaded copy and go back to the data set shipped with the program."/>
                         </StackPanel>
