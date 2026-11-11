@@ -53,6 +53,45 @@ public class KnownObjectTests
         Assert.Single(galaxies, g => g.Name == "Large Magellanic Cloud");
     }
 
+    /// <summary>Ruling R38: in the Local Group frame M31 approaches at about 120 km/s.</summary>
+    [Fact]
+    public void LocalVolume_M31_PeculiarVelocity()
+    {
+        var m31 = Assert.Single(Load(DataSetKind.LocalVolume).Objects.OfType<Galaxy>(), g => g.AltNames.Contains("M 31"));
+        Assert.InRange(m31.PeculiarKms!.Value, -160, -80);
+    }
+
+    /// <summary>Ruling R39: Bode's Galaxy takes its UNGC distance (3.63 Mpc), not a redshift distance.</summary>
+    [Fact]
+    public void NearbyUniverse_M81()
+    {
+        var m81 = Assert.Single(Load(DataSetKind.NearbyUniverse).Objects.OfType<Galaxy>(), g => g.AltNames.Contains("M 81"));
+        Assert.InRange(m81.DistanceMpc, 3.4, 3.9);
+        Assert.Equal(DistanceSource.Measured, m81.DistanceSource);
+        Assert.Equal("UNGC", m81.DistanceCatalog);
+    }
+
+    /// <summary>Ruling R38: Cosmicflows-4 peculiar velocities only within 150 Mpc, with CF4's H0 = 74.6.</summary>
+    [Fact]
+    public void NearbyUniverse_PeculiarVelocitiesFollowR38()
+    {
+        var ds = Load(DataSetKind.NearbyUniverse);
+        var cf4 = ds.Objects.Where(o => o.DistanceCatalog == "Cosmicflows-4").ToList();
+        Assert.NotEmpty(cf4);
+        Assert.All(cf4.Where(o => o.DistanceMpc > 150), o => Assert.Null(o.PeculiarKms));
+        Assert.All(cf4.Where(o => o.PeculiarKms != null),
+            o => Assert.Equal(o.VCmb!.Value - 74.6 * o.DistanceMpc, o.PeculiarKms!.Value, 6));
+    }
+
+    /// <summary>Ruling R43: no quasar-set object below z = 0.005.</summary>
+    [Fact]
+    public void Quasars_NoVeryLowRedshift()
+    {
+        var ds = Load(DataSetKind.Quasars);
+        Assert.DoesNotContain(ds.Objects, o => o.Z < 0.005);
+        Assert.DoesNotContain(ds.Objects, o => o.Name == "NGC 253");
+    }
+
     [Fact]
     public void NearbyUniverse_M87()
     {
