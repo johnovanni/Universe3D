@@ -1,3 +1,5 @@
+using Universe3D.Core.Objects;
+
 namespace Universe3D.Core.Text;
 
 /// <summary>Plain-language explanations of every astronomy term shown in the UI, used for tooltips.</summary>
@@ -9,7 +11,7 @@ public static class Glossary
         ["Blueshift"] = "How much an object's light is squeezed toward blue because it is moving toward us. Only a few nearby galaxies, such as Andromeda, are blueshifted.",
         ["Observed"] = "What telescopes measure: the galaxy's own motion plus the expansion of the universe, which carries distant galaxies away from us.",
         ["PeculiarVelocity"] = "The galaxy's own motion through space, with the universe's expansion removed. 'Peculiar' means particular to this galaxy, not strange. It is usually caused by the gravity of nearby galaxies and clusters.",
-        ["ComovingDistance"] = "Distance measured on a grid that expands along with the universe, so it stays fixed for a galaxy that is only carried along by the expansion. It is the distance plotted here.",
+        ["ComovingDistance"] = "Distance measured on a grid that expands along with the universe, so it stays fixed for a galaxy that is only carried along by the expansion. Objects whose distance comes from their redshift are placed at this distance.",
         ["LookbackTime"] = "How long the light has been travelling to reach us, which is also how far back in time we see the object. A lookback time of 2 billion years means we see it as it was 2 billion years ago.",
         ["HubbleType"] = "A galaxy's shape class: elliptical, lenticular, spiral, barred spiral or irregular. Astronomers write it as a short code such as E, S0, Sb or SBc.",
         ["AxisRatio"] = "The width of a galaxy's apparent outline divided by its length. A value of 1 looks round; a small value looks thin, like a disk seen edge-on.",
@@ -57,4 +59,12 @@ public static class Glossary
     public static IReadOnlyDictionary<string, string> All => Terms;
 
     public static string Get(string key) => Terms[key];
+
+    /// <summary>Keys for the "Types" filter header: galaxy types, cluster catalogs or quasar types (spec §5).</summary>
+    public static string TypesHeaderKeys(DataSetKind kind) => kind switch
+    {
+        DataSetKind.Clusters => "Mcxc Abell",
+        DataSetKind.Quasars => "Quasar Agn BlLac Type2Agn",
+        _ => "HubbleType",
+    };
 }

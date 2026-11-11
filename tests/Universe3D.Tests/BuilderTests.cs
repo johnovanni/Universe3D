@@ -248,6 +248,21 @@ public class BuilderTests
         Assert.Equal("MQ:3C 273", q.Id);
     }
 
+    /// <summary>
+    /// Ruling R43: Milliquas gives z to 3 decimals, so z &lt; 0.005 would put nearby AGN such as NGC 253 inside the
+    /// Local Group. Those galaxies are in the galaxy data sets.
+    /// </summary>
+    [Fact]
+    public async Task Quasars_ExcludeVeryLowRedshift()
+    {
+        Assert.Contains(MilliquasRows(), r => r.Name == "NGC 253");
+        var ds = await Build(new QuasarBuilder());
+        Assert.DoesNotContain(ds.Objects, o => o.Name == "NGC 253");
+        Assert.All(ds.Objects, o => Assert.True(o.Z >= QuasarBuilder.MinRedshift, o.Name));
+        Assert.Equal(0.005, QuasarBuilder.MinRedshift);
+        Assert.Contains("z < 0.005", ds.SourceSummary);
+    }
+
     [Fact]
     public async Task Quasars_CapAndOrder()
     {

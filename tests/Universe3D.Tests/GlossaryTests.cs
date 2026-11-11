@@ -37,6 +37,27 @@ public class GlossaryTests
             Glossary.Get("PeculiarVelocity"));
     }
 
+    /// <summary>Plotted distances are measured ones where available, so comoving distance is the redshift-based one.</summary>
+    [Fact]
+    public void Glossary_ComovingDistance_SaysWhenItIsUsed()
+    {
+        string text = Glossary.Get("ComovingDistance");
+        Assert.DoesNotContain("It is the distance plotted here", text);
+        Assert.Contains("redshift", text);
+    }
+
+    /// <summary>The "Types" filter header explains the types of the data set on screen.</summary>
+    [Theory]
+    [InlineData(Universe3D.Core.Objects.DataSetKind.LocalVolume, "HubbleType")]
+    [InlineData(Universe3D.Core.Objects.DataSetKind.NearbyUniverse, "HubbleType")]
+    [InlineData(Universe3D.Core.Objects.DataSetKind.Clusters, "Mcxc Abell")]
+    [InlineData(Universe3D.Core.Objects.DataSetKind.Quasars, "Quasar Agn BlLac Type2Agn")]
+    public void Glossary_TypesHeaderKeys_FollowTheDataSet(Universe3D.Core.Objects.DataSetKind kind, string keys)
+    {
+        Assert.Equal(keys, Glossary.TypesHeaderKeys(kind));
+        Assert.All(keys.Split(' '), k => Assert.True(Glossary.All.ContainsKey(k), k));
+    }
+
     /// <summary>Ruling R30: educational accuracy of the redshift, cz and M500 texts.</summary>
     [Fact]
     public void Glossary_AccuracyR30()

@@ -97,5 +97,7 @@ deg	deg	 	 	mag	mag
 009.5696045	-44.6570781	Gaia 4980429404833821312 	X   	20.25	20.44	 1.540
 009.5842168	+13.5145223	Gaia 2779306116432021632 	X   	18.22	18.74	 0.490
 009.5868584	-50.6853106	Gaia 4926271653937715584 	X   	19.67	20.63	 1.340
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&-c=11.8880-25.2880&-c.rm=1&-out.max=50
+011.8878750	-25.2886389	NGC 253                  	AX  	 8.30	 9.70	 0.001
 # Synthetic row (hand-written, not from VizieR) for Builder_CountsSkippedRows: blank RA.
            	+10.0000000	SYNTHETIC BLANK RA       	Q   	18.00	19.00	 1.000

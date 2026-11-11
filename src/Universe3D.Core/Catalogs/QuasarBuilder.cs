@@ -13,6 +13,12 @@ public sealed class QuasarBuilder(int cap = 250_000, DistanceResolver? resolver 
 {
     private const string Source = "VII/294/catalog";
 
+    /// <summary>
+    /// Ruling R43: rows below this redshift are dropped. Milliquas gives z to 3 decimals, which would put nearby AGN
+    /// such as NGC 253 (z = 0.001) inside the Local Group; those galaxies are in the galaxy data sets.
+    /// </summary>
+    public const double MinRedshift = 0.005;
+
     private static readonly string[] Columns = ["RAJ2000", "DEJ2000", "Name", "Type", "Rmag", "Bmag", "z"];
 
     private static readonly IReadOnlyDictionary<string, string> RedshiftOnly =
@@ -30,7 +36,7 @@ public sealed class QuasarBuilder(int cap = 250_000, DistanceResolver? resolver 
 
         var quasars = new List<Quasar>();
         var ids = new HashSet<string>(StringComparer.Ordinal);
-        int skipped = 0, excluded = 0, unclassified = 0;
+        int skipped = 0, excluded = 0, unclassified = 0, tooNear = 0;
         for (int i = 0; i < t.Count; i++)
         {
             if (i % 16384 == 0) ct.ThrowIfCancellationRequested();
@@ -40,6 +46,7 @@ public sealed class QuasarBuilder(int cap = 250_000, DistanceResolver? resolver 
                 continue;
             }
             if (Classify(t.Get(i, "Type")) is not { } type) { unclassified++; continue; }
+            if (z < MinRedshift) { tooNear++; continue; }
 
             var res = _resolver.Resolve(pos.Ra, pos.Dec, null, null, null, z);
             if (res == null) { excluded++; continue; }
@@ -68,7 +75,8 @@ public sealed class QuasarBuilder(int cap = 250_000, DistanceResolver? resolver 
         // OrderBy is stable, so equal magnitudes keep catalog order.
         var kept = quasars.OrderBy(q => q.Magnitude ?? double.PositiveInfinity).Take(Math.Max(0, cap))
             .ToList<CosmicObject>();
-        string summary = $"Milliquas ({Source}, z > 0): {t.Count} rows, {unclassified} unclassified dropped; " +
+        string summary = $"Milliquas ({Source}, z > 0): {t.Count} rows, {unclassified} unclassified dropped, " +
+                         $"{tooNear} with z < 0.005 dropped (nearby galaxies, in the galaxy data sets); " +
                          $"{kept.Count} of {quasars.Count} kept (brightest by R, else B; limit {cap})";
         return new DataSet(Kind, kept, excluded, skipped, DateTime.UtcNow, summary);
     }

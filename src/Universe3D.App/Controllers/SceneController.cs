@@ -212,7 +212,7 @@ public sealed partial class SceneController : IDisposable
         UpdateOverlay(viewport);
 
         CalibrationStep();
-        _host.Animating = Camera.IsFlying || _spin || _calibrating;
+        _host.Animating = Camera.IsFlying || _spin || Calibrating;
         if (++_frames % StatusEveryFrames == 0 || !_host.Animating) UpdateStatus();
     }
 

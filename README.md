@@ -45,6 +45,8 @@ It is made for exploring and learning, with astronomically correct positions. It
 | Disk | 300 MB (app + built-in snapshots) | plus ~500 MB if every catalog is downloaded |
 | Network | Only for "Download latest" | same |
 
+- Performance was measured only on a recommended-class system (Iris Xe; see `docs/perf-2026-11.md`).
+  **Minimum-class performance was not measured**, because no such hardware was available.
 - On a GPU below the recommended class, the app starts with a lower **quasar limit** (100,000) and **galaxy-shape
   limit** (5,000) and says so once in the status bar. Both can be changed in the left panel. The GPU is recognized
   from its OpenGL renderer name, or, for an unknown GPU, from a short frame-time measurement at startup.
@@ -121,6 +123,8 @@ data it has and shows the reason.
 
 Where a galaxy is in both UNGC and McConnachie, McConnachie wins (it has position angle and ellipticity).
 Catalog rows with missing or invalid positions or redshifts are skipped and counted in the status bar.
+Milliquas objects with z < 0.005 are left out of the quasar data set: their redshifts have only three decimals,
+which would place nearby active galaxies such as NGC 253 inside the Local Group, and they are in the galaxy data sets.
 
 ## How distances and velocities are computed
 

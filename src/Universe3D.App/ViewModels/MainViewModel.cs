@@ -3,7 +3,6 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Universe3D.Core.Catalogs;
-using Universe3D.Core.Cosmology;
 using Universe3D.Core.Display;
 using Universe3D.Core.Objects;
 using Universe3D.Core.Text;
@@ -37,7 +36,6 @@ public sealed partial class MainViewModel : ObservableObject
         Filters.PropertyChanged += OnFiltersChanged;
     }
 
-    public CosmologyModel Cosmology { get; } = CosmologyModel.Default;
     public IReadOnlyList<DataSetViewModel> DataSets { get; }
     public FilterOptions Filters { get; } = new();
     public InfoViewModel Info { get; } = new();
@@ -62,6 +60,7 @@ public sealed partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _dataSetStatus = "Starting…";
     [ObservableProperty] private string _objectsStatus = "";
     [ObservableProperty] private string _excludedStatus = "";
+    [ObservableProperty] private string _skippedStatus = "";
     [ObservableProperty] private string _cameraStatus = "";
     [ObservableProperty] private string _frameRateStatus = "";
     [ObservableProperty] private string _warning = "";
@@ -147,9 +146,11 @@ public sealed partial class MainViewModel : ObservableObject
         IsDownloading = true;
         DownloadStatus = $"Downloading {title}…";
         var progress = new Progress<string>(text => DownloadStatus = $"{title}: {text}");
+        bool saved = false; // DownloadAsync returns only after the new copy is saved
         try
         {
             var ds = await Task.Run(() => _downloads.DownloadAsync(kind, progress, cts.Token));
+            saved = true;
             DownloadStatus = $"Downloaded {title}: {ds.Objects.Count:N0} objects.";
             var entry = DataSets.First(d => d.Kind == kind);
             entry.Forget();
@@ -166,7 +167,7 @@ public sealed partial class MainViewModel : ObservableObject
         }
         catch (Exception ex)
         {
-            DownloadStatus = $"Download of {title} failed; the existing data was kept. {ex.Message}";
+            DownloadStatus = StatusTexts.DownloadFailed(title, ex.Message, saved);
         }
         finally
         {
@@ -200,7 +201,7 @@ public sealed partial class MainViewModel : ObservableObject
         if (value != null) _ = ActivateAsync(value);
     }
 
-    partial void OnSelectedChanged(CosmicObject? value) => Info.Show(value, Cosmology);
+    partial void OnSelectedChanged(CosmicObject? value) => Info.Show(value);
 
     partial void OnSearchTextChanged(string value) => _ = SearchAsync(value);
 
@@ -292,9 +293,8 @@ public sealed partial class MainViewModel : ObservableObject
         int visible = ds.Objects.Count(o => FilterOptions.Passes(o, max, mask));
         ObjectsStatus = string.Create(CultureInfo.InvariantCulture,
             $"{visible:N0} of {ds.Objects.Count:N0} objects shown");
-        ExcludedStatus = ds.ExcludedCount > 0
-            ? string.Create(CultureInfo.InvariantCulture, $"{ds.ExcludedCount:N0} left out (no valid distance)")
-            : "";
+        ExcludedStatus = StatusTexts.Excluded(ds.ExcludedCount);
+        SkippedStatus = StatusTexts.Skipped(ds.SkippedRows);
     }
 
     private async Task SearchAsync(string text)

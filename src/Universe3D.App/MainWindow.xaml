@@ -26,6 +26,9 @@
                     <TextBlock Text="{Binding ObjectsStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"/>
                     <TextBlock Text="{Binding ExcludedStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
                                ToolTip="{res:Glossary NoValidDistance}"/>
+                    <TextBlock Text="{Binding SkippedStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
+                               ToolTip="Catalog rows with a missing or invalid position, redshift or distance are skipped when the data set is built."
+                               Visibility="{Binding SkippedStatus, Converter={StaticResource EmptyToCollapsed}}"/>
                     <TextBlock Text="{Binding DownloadStatus}" Style="{StaticResource Muted}" Margin="16,0,0,0"
                                MaxWidth="560" TextTrimming="CharacterEllipsis" ToolTip="{Binding DownloadStatus}"
                                Visibility="{Binding DownloadStatus, Converter={StaticResource EmptyToCollapsed}}"/>
@@ -92,7 +95,7 @@
                                     Value="{Binding DistanceLog, Delay=30}" SmallChange="0.02" LargeChange="0.25"
                                     ToolTip="{res:Glossary ComovingDistance}"/>
 
-                            <TextBlock Text="Types" Style="{StaticResource FieldLabel}" ToolTip="{res:Glossary HubbleType}"/>
+                            <TextBlock Text="Types" Style="{StaticResource FieldLabel}" ToolTip="{Binding TypesToolTip}"/>
                             <ItemsControl ItemsSource="{Binding Types}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>

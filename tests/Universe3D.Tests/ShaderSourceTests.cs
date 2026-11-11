@@ -26,4 +26,12 @@ public class ShaderSourceTests
         var nonAscii = source.Where(c => c > 127).ToArray();
         Assert.True(nonAscii.Length == 0, $"{name} has non-ASCII characters: {new string(nonAscii)}");
     }
+
+    /// <summary>Spec §3: arrows are drawn at 70% opacity.</summary>
+    [Fact]
+    public void Arrows_AreDrawnAt70PercentOpacity()
+    {
+        string source = ShaderProgram.ReadSource("arrows.frag");
+        Assert.Contains("o_color = vec4(g_color, 0.7);", source);
+    }
 }

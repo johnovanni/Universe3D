@@ -42,7 +42,7 @@ public class ObjectInfoFormatterTests
     [Fact]
     public void Info_M31Rows()
     {
-        var rows = ObjectInfoFormatter.Format(M31(), Cosmo);
+        var rows = ObjectInfoFormatter.Format(M31());
 
         Assert.Contains(rows, r => r.Label == "Distance" && r.Value == "2.51 Mly (0.77 Mpc), measured (UNGC)");
         Assert.Contains(rows, r => r.Value.StartsWith("Blueshifted: approaching at 300 km/s", StringComparison.Ordinal));
@@ -72,7 +72,7 @@ public class ObjectInfoFormatterTests
         var edgePoint = centre + northEdge * 0.01; // 10 kpc out along the disk
         Assert.True(edgePoint.Length > centre.Length, "the north edge is the far edge");
 
-        string tilt = Row(ObjectInfoFormatter.Format(g, Cosmo), "Disk tilt").Value;
+        string tilt = Row(ObjectInfoFormatter.Format(g), "Disk tilt").Value;
         Assert.Contains("north edge tilted away from us", tilt);
         Assert.DoesNotContain("toward us", tilt);
         Assert.Contains("tilted away from us", Glossary.Get("DiskTilt"));
@@ -86,10 +86,11 @@ public class ObjectInfoFormatterTests
         {
             Id = "MQ:TEST", Name = "Test quasar", RaDeg = 150, DecDeg = 2, Z = 7,
             DistanceMpc = Cosmo.ComovingDistanceMpc(7), DistanceSource = DistanceSource.Redshift,
+            LookbackGyr = Cosmo.LookbackTimeGyr(7),
             DistanceCatalog = "Redshift", Type = QuasarType.Quasar, RMag = 19.5,
         };
 
-        var rows = ObjectInfoFormatter.Format(q, Cosmo);
+        var rows = ObjectInfoFormatter.Format(q);
 
         Assert.Equal("12.7 billion years", Row(rows, "Look-back time").Value);
         // z > 0.1: look-back time is the headline figure, and the shift is cosmic expansion.
@@ -101,8 +102,39 @@ public class ObjectInfoFormatterTests
     public void Info_MeasuredDistanceLookbackUsesDistance()
     {
         // Ruling R8: M31 is blueshifted, but its light still travelled about 2.5 million years.
-        var rows = ObjectInfoFormatter.Format(M31(), Cosmo);
+        var rows = ObjectInfoFormatter.Format(M31());
         Assert.Equal("2.51 million years", Row(rows, "Look-back time").Value);
+    }
+
+    /// <summary>The panel shows the look-back time stored with the object (computed once, by the builder).</summary>
+    [Fact]
+    public void Info_UsesStoredLookback()
+    {
+        var g = M31();
+        var stored = new Galaxy
+        {
+            Id = g.Id, Name = g.Name, RaDeg = g.RaDeg, DecDeg = g.DecDeg, DistanceMpc = g.DistanceMpc,
+            DistanceSource = g.DistanceSource, DistanceCatalog = g.DistanceCatalog, CzHelio = g.CzHelio, Z = g.Z,
+            Morphology = g.Morphology, LookbackGyr = 0.00314,
+        };
+        Assert.Equal("3.14 million years", Row(ObjectInfoFormatter.Format(stored), "Look-back time").Value);
+    }
+
+    /// <summary>The disk inclination formula means nothing for ellipticals and dwarf spheroidals.</summary>
+    [Theory]
+    [InlineData("E")]
+    [InlineData("dSph")]
+    public void Info_NonDiskGalaxy_HasNoInclinationRow(string code)
+    {
+        var g = new Galaxy
+        {
+            Id = "UNGC:X", Name = "X", DistanceMpc = 3, DistanceSource = DistanceSource.Measured,
+            DistanceCatalog = "UNGC", AxisRatio = 0.7, InclinationDeg = 47, PaDeg = 20,
+            Morphology = code == "E" ? MorphologyParser.FromHyperLeda("E") : MorphologyParser.FromMcConnachie("dSph"),
+        };
+        var rows = ObjectInfoFormatter.Format(g);
+        Assert.DoesNotContain(rows, r => r.Label == "Inclination");
+        Assert.Contains(rows, r => r.Label == "Axis ratio (b/a)");
     }
 
     [Fact]
@@ -119,7 +151,7 @@ public class ObjectInfoFormatterTests
                 DistanceSource = DistanceSource.Redshift, Type = QuasarType.BlLac, RMag = 14.1, BMag = 13.7 },
         };
         foreach (var o in objects)
-            foreach (var r in ObjectInfoFormatter.Format(o, Cosmo))
+            foreach (var r in ObjectInfoFormatter.Format(o))
                 if (r.GlossaryKey is { } key)
                     Assert.True(Glossary.All.ContainsKey(key), $"{r.Label}: {key}");
     }
@@ -134,7 +166,7 @@ public class ObjectInfoFormatterTests
             DistanceSource = DistanceSource.Redshift, DistanceCatalog = "Redshift",
             Morphology = MorphologyParser.FromZcat("98"),
         };
-        var type = Row(ObjectInfoFormatter.Format(g, Cosmo), "Type");
+        var type = Row(ObjectInfoFormatter.Format(g), "Type");
         Assert.StartsWith("Type not classified in the catalog", type.Value);
         Assert.DoesNotContain("Unknown", type.Value);
     }
@@ -143,7 +175,7 @@ public class ObjectInfoFormatterTests
     public void Info_NoPositionAngle_NotMeasuredAndIllustrative()
     {
         // Ruling R27.
-        var rows = ObjectInfoFormatter.Format(M31(pa: null), Cosmo);
+        var rows = ObjectInfoFormatter.Format(M31(pa: null));
         Assert.Equal("not measured", Row(rows, "Position angle").Value);
         Assert.Contains(rows, r => r.Value.Contains("illustrative", StringComparison.Ordinal));
         Assert.DoesNotContain(rows, r => r.Value.Contains("tilt direction assumed", StringComparison.Ordinal));
@@ -157,7 +189,7 @@ public class ObjectInfoFormatterTests
             Id = "UNGC:X", Name = "KK 1", DistanceMpc = 3, DistanceSource = DistanceSource.Measured,
             DistanceCatalog = "UNGC", Morphology = MorphologyParser.FromUngc(10, "L"),
         };
-        var rows = ObjectInfoFormatter.Format(g, Cosmo);
+        var rows = ObjectInfoFormatter.Format(g);
         Assert.Equal("not measured", Row(rows, "Position angle").Value);
         Assert.Equal("not measured", Row(rows, "Inclination").Value);
     }
@@ -173,7 +205,7 @@ public class ObjectInfoFormatterTests
             M500e14 = 4.2846, R500Mpc = 1.1378, Catalogs = ClusterCatalogs.Mcxc | ClusterCatalogs.Abell,
             Sources = new[] { "MCXC", "Abell" },
         };
-        var rows = ObjectInfoFormatter.Format(c, Cosmo);
+        var rows = ObjectInfoFormatter.Format(c);
         Assert.Equal(new InfoRow("Mass M500", "4.28 × 10¹⁴ solar masses", "M500"), Row(rows, "Mass M500"));
         Assert.Equal("3.71 Mly (1.14 Mpc)", Row(rows, "Radius R500").Value);
         Assert.Equal("333 Mly (102 Mpc), from redshift", Row(rows, "Distance").Value);
@@ -185,7 +217,7 @@ public class ObjectInfoFormatterTests
     [Fact]
     public void Info_PeculiarVelocityShownForMeasuredLowZ()
     {
-        var row = Row(ObjectInfoFormatter.Format(M31(), Cosmo), "Peculiar velocity");
+        var row = Row(ObjectInfoFormatter.Format(M31()), "Peculiar velocity");
         Assert.Equal("PeculiarVelocity", row.GlossaryKey);
         Assert.StartsWith("117 km/s toward us", row.Value);
         Assert.Contains("relative to the Local Group", row.Value);
@@ -202,7 +234,7 @@ public class ObjectInfoFormatterTests
     [Fact]
     public void Info_PeculiarVelocity_Cosmicflows4_NamesTheCmbFrame()
     {
-        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(50, 470), Cosmo), "Peculiar velocity");
+        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(50, 470)), "Peculiar velocity");
         Assert.StartsWith("470 km/s away from us", row.Value);
         Assert.Contains("relative to the cosmic microwave background", row.Value);
     }
@@ -210,7 +242,7 @@ public class ObjectInfoFormatterTests
     [Fact]
     public void Info_PeculiarVelocity_Cosmicflows4_BeyondLimit_NotReliable()
     {
-        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(200, null), Cosmo), "Peculiar velocity");
+        var row = Row(ObjectInfoFormatter.Format(Cf4Galaxy(200, null)), "Peculiar velocity");
         Assert.Equal("not reliable at this distance", row.Value);
         Assert.Equal("PeculiarVelocity", row.GlossaryKey);
     }

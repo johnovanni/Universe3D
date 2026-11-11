@@ -37,7 +37,12 @@ public sealed partial class FilterOptions : ObservableObject
         new("All loaded", int.MaxValue),
     };
 
-    [ObservableProperty] private DataSetKind? _kind;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TypesToolTip))]
+    private DataSetKind? _kind;
+
+    /// <summary>The "Types" header tooltip: galaxy types, cluster catalogs or quasar types, by data set.</summary>
+    public string TypesToolTip => GlossaryExtension.Text(Glossary.TypesHeaderKeys(Kind ?? DataSetKind.LocalVolume));
 
     // Maximum distance, as log10(Mpc) on a logarithmic slider.
     [ObservableProperty] private double _distanceLogMin = -3;

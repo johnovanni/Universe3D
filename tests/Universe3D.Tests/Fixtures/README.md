@@ -121,6 +121,8 @@ curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&
 curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&Type=R&-out.max=3"
 # then append its data rows (3 new):
 curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&Type=X&-out.max=3"
+# then append its data rows (1 new: NGC 253, z = 0.001, for ruling R43's z < 0.005 cut):
+curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=VII/294/catalog&-out=RAJ2000,DEJ2000,Name,Type,Rmag,Bmag,z&z=%3E0&-c=11.8880-25.2880&-c.rm=1&-out.max=50"
 ```
 
 ### Hand edit

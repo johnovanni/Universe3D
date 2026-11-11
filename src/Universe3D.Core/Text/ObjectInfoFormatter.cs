@@ -17,14 +17,14 @@ public static class ObjectInfoFormatter
     /// <summary>Wording for galaxies the catalog does not classify (Ruling R19).</summary>
     public const string Unclassified = "Type not classified in the catalog";
 
-    public static IReadOnlyList<InfoRow> Format(CosmicObject o, CosmologyModel cosmo)
+    public static IReadOnlyList<InfoRow> Format(CosmicObject o)
     {
         var rows = new List<InfoRow>();
         double? cz = o.CzHelio ?? o.Z * RedshiftMath.C;
         double? z = o.Z ?? o.CzHelio / RedshiftMath.C;
         bool cosmic = z > RedshiftMath.CosmicExpansionZ;
         bool measured = o.DistanceSource == DistanceSource.Measured;
-        var lookback = new InfoRow("Look-back time", FormatLookback(LookbackGyr(o, z, cosmo)), "LookbackTime");
+        var lookback = new InfoRow("Look-back time", FormatLookback(o.LookbackGyr), "LookbackTime");
 
         // Far away, how long ago the light left is the headline figure.
         if (cosmic) rows.Add(lookback);
@@ -105,26 +105,22 @@ public static class ObjectInfoFormatter
             : null;
     }
 
-    /// <summary>Ruling R8: a measured distance gives the light-travel time; otherwise the redshift does.</summary>
-    private static double LookbackGyr(CosmicObject o, double? z, CosmologyModel cosmo) =>
-        o.DistanceSource == DistanceSource.Measured || z is not double zz
-            ? cosmo.LookbackTimeGyr(cosmo.RedshiftAtComovingDistance(o.DistanceMpc))
-            : cosmo.LookbackTimeGyr(zz);
-
     private static void AddGalaxy(List<InfoRow> rows, Galaxy g)
     {
         rows.Add(new("Type", TypeText(g.Morphology), "HubbleType"));
         rows.Add(new("Position angle", g.PaDeg is double pa ? Deg(pa) : "not measured", "PositionAngle"));
         rows.Add(new("Axis ratio (b/a)", g.AxisRatio is double q ? q.ToString("0.00", Inv) : "not measured", "AxisRatio"));
-        rows.Add(new("Inclination",
-            g.InclinationDeg is double i
-                ? Deg(i) + (g.InclinationMeasured ? "" : " (estimated from the axis ratio)")
-                : "not measured",
-            "Inclination"));
+        // Ellipticals and dwarf spheroidals are drawn as ellipsoids; a disk inclination means nothing for them.
+        bool disk = g.Morphology.Class is not (MorphologyClass.Elliptical or MorphologyClass.DwarfSpheroidal);
+        if (disk)
+            rows.Add(new("Inclination",
+                g.InclinationDeg is double i
+                    ? Deg(i) + (g.InclinationMeasured ? "" : " (estimated from the axis ratio)")
+                    : "not measured",
+                "Inclination"));
         if (g.DiameterKpc is double kpc)
             rows.Add(new("Diameter", $"{Units.FormatLightYears(kpc / 1000)} ({kpc.ToString("0.#", Inv)} kpc)", "Diameter"));
 
-        bool disk = g.Morphology.Class is not (MorphologyClass.Elliptical or MorphologyClass.DwarfSpheroidal);
         // Ruling R27: without a measured position angle the drawn orientation is made up.
         if (g.PaDeg is null)
             rows.Add(new(disk ? "Disk tilt" : "Orientation",

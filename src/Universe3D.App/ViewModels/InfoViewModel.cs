@@ -1,5 +1,4 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-using Universe3D.Core.Cosmology;
 using Universe3D.Core.Objects;
 using Universe3D.Core.Text;
 
@@ -16,7 +15,7 @@ public sealed partial class InfoViewModel : ObservableObject
     [ObservableProperty] private bool _hasSelection;
     [ObservableProperty] private IReadOnlyList<InfoRowViewModel> _rows = Array.Empty<InfoRowViewModel>();
 
-    public void Show(CosmicObject? o, CosmologyModel cosmo)
+    public void Show(CosmicObject? o)
     {
         HasSelection = o != null;
         if (o == null)
@@ -34,7 +33,7 @@ public sealed partial class InfoViewModel : ObservableObject
             Quasar => "Quasar or active galaxy",
             _ => "",
         };
-        Rows = ObjectInfoFormatter.Format(o, cosmo)
+        Rows = ObjectInfoFormatter.Format(o)
             .Select(r => new InfoRowViewModel(r.Label, NoBreakInUnits(r.Value),
                                               r.GlossaryKey is { } k ? Glossary.Get(k) : null))
             .ToList();

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using Universe3D.Core.Display;
 
@@ -13,10 +14,11 @@ internal sealed class GlUnsupportedException(string? renderer, string? version) 
 /// <summary>GL requirement check, GPU classification and the reduced defaults (spec §1 and §7).</summary>
 public sealed partial class SceneController
 {
-    private const int CalibrationSkipFrames = 3, CalibrationFrames = 60;
+    private GpuCalibration? _calibration;
+    private readonly Stopwatch _calibrationClock = new();
 
-    private bool _calibrating;
-    private readonly List<double> _calibrationMs = new();
+    /// <summary>True while an unrecognised GPU is being measured (the view keeps redrawing meanwhile).</summary>
+    private bool Calibrating => _calibration is { IsRunning: true };
 
     private static (string? Renderer, string? Version) SplitGlInfo(string glInfo)
     {
@@ -33,7 +35,8 @@ public sealed partial class SceneController
 
     /// <summary>
     /// Classifies the GPU by its renderer string. If the name is not recognised, measures the GPU for the first ~60
-    /// frames of the initial view (<see cref="CalibrationStep"/>) and classifies by the median.
+    /// frames of the initial view (<see cref="CalibrationStep"/>) and classifies by the median. If no data set is drawn
+    /// within <see cref="GpuCalibration.MaxWait"/>, it stops and keeps the current defaults.
     /// </summary>
     private void BeginGpuClassification(string glInfo)
     {
@@ -44,21 +47,23 @@ public sealed partial class SceneController
             _vm.ApplyGpuDefaults(GpuDefaults.For(byName));
             return;
         }
-        _calibrating = true;
+        _calibration = new GpuCalibration(renderer);
+        _calibrationClock.Restart();
         _host.MeasureDraw = true;
     }
 
-    /// <summary>Called after each frame. Collects frame costs once the first data set is drawn, then applies the defaults.</summary>
+    /// <summary>
+    /// Called after each frame. Collects frame costs once the first data set is drawn, then applies the defaults; gives
+    /// up if no data set is drawn in time.
+    /// </summary>
     private void CalibrationStep()
     {
-        if (!_calibrating || _uploaded == null) return;
-        _calibrationMs.Add(_host.LastDrawMs);
-        if (_calibrationMs.Count < CalibrationSkipFrames + CalibrationFrames) return;
-        var sample = _calibrationMs.Skip(CalibrationSkipFrames).OrderBy(x => x).ToArray();
-        _calibrating = false;
+        if (_calibration is not { IsRunning: true } calibration) return;
+        var gpu = calibration.Step(_calibrationClock.Elapsed, _uploaded != null, _host.LastDrawMs);
+        if (calibration.IsRunning) return;
         _host.MeasureDraw = false;
-        string renderer = SplitGlInfo(_host.GlInfo).Renderer ?? "";
-        _vm.ApplyGpuDefaults(GpuDefaults.For(GpuClassifier.Classify(renderer, sample[sample.Length / 2])));
+        _calibrationClock.Stop();
+        if (gpu is { } measured) _vm.ApplyGpuDefaults(GpuDefaults.For(measured));
     }
 
     /// <summary>The OpenGL 4.1 message (spec §7): requirement, detected renderer, USB-adapter hint. Does not close the window.</summary>
