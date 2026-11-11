@@ -98,3 +98,5 @@ LGS 3             	015.979167	+21.885000	  2.40	 0.58	10	L	-286	 0.65	64	 -74
 LMC               	080.894167	-69.756111	645.65	 0.85	 9	N	 278	 0.05	35	  28
 # Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=283.7629-30.4783&-c.rm=1&-out.max=50
 Sag dSph          	283.762917	-30.478333	446.68	 0.48	-3	X	 140	 0.02	90	 159
+# Rows appended from: https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=148.8883%2B69.0653&-c.rm=1&-out.max=50
+MESSIER081        	148.889583	+69.066667	 28.18	 0.52	 3	 	 -38	 3.63	62	 104

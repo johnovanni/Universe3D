@@ -32,6 +32,21 @@ public class SkyCrossMatcherTests
     }
 
     [Fact]
+    public void CrossMatch_FindWithin_ReturnsEveryPointInRadius()
+    {
+        var m = new SkyCrossMatcher(120);
+        m.Add(10.0, 20.0, 0);
+        m.Add(10.0, 20.0 + 50 / 3600.0, 1);
+        m.Add(10.0, 20.0 + 100 / 3600.0, 2);
+        m.Add(359.99, 20.0, 3);
+        var near = m.FindWithin(10.0, 20.0, 60).OrderBy(x => x.Index).ToList();
+        Assert.Equal(new[] { 0, 1 }, near.Select(x => x.Index));
+        Assert.Equal(50, near[1].SepArcsec, 6);
+        Assert.Equal(3, m.FindWithin(10.0, 20.0, 120).Count());
+        Assert.Throws<ArgumentOutOfRangeException>(() => m.FindWithin(10, 20, 121).ToList());
+    }
+
+    [Fact]
     public void CrossMatch_WrapsRa()
     {
         var m = new SkyCrossMatcher();

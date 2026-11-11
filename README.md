@@ -114,7 +114,7 @@ data it has and shows the reason.
 | Data set | Catalogs |
 |---|---|
 | Local Group and Local Volume | [Karachentsev et al. 2013, UNGC](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/145/101) (`J/AJ/145/101`); [McConnachie 2012, Local Group dwarfs](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/AJ/144/4) (`J/AJ/144/4`) |
-| Nearby universe | [2MASS Redshift Survey, Huchra et al. 2012](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/199/26) (`J/ApJS/199/26`) |
+| Nearby universe | [2MASS Redshift Survey, Huchra et al. 2012](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJS/199/26) (`J/ApJS/199/26`), with measured distances from McConnachie and UNGC (above), then Cosmicflows-4 |
 | Galaxy clusters | [MCXC, Piffaretti et al. 2011](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/A%2bA/534/A109) (`J/A+A/534/A109`); [Abell, Abell and Corwin catalogs](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/110A) (`VII/110A`) |
 | Quasars and AGN | [Million Quasars catalog, Flesch](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/294) (`VII/294`) |
 | Enrichment (position angle, size, distance) | [HyperLEDA](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=VII/237) (`VII/237`); [Cosmicflows-4, Tully et al. 2023](https://vizier.cds.unistra.fr/viz-bin/VizieR?-source=J/ApJ/944/94) (`J/ApJ/944/94`) |

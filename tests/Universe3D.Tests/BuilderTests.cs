@@ -144,6 +144,55 @@ public class BuilderTests
         Assert.Equal(1307, m87.CzHelio);
     }
 
+    /// <summary>Ruling R39: McConnachie, then UNGC, then Cosmicflows-4 (spec §3), cross-matched by position.</summary>
+    [Theory]
+    [InlineData("M 31", "McConnachie 2012", 0.783)]
+    [InlineData("M 32", "McConnachie 2012", 0.805)]
+    [InlineData("NGC 253", "UNGC", 3.94)]
+    [InlineData("M 81", "UNGC", 3.63)]
+    public async Task NearbyUniverse_PrefersLocalVolumeDistances(string designation, string catalog, double mpc)
+    {
+        var ds = await Build(new NearbyUniverseBuilder());
+        var g = Assert.Single(ds.Objects.OfType<Galaxy>(), o => o.AltNames.Contains(designation));
+        Assert.Equal(DistanceSource.Measured, g.DistanceSource);
+        Assert.Equal(catalog, g.DistanceCatalog);
+        Assert.Equal(mpc, g.DistanceMpc, 6);
+        Assert.Contains(catalog, g.Sources);
+        Assert.StartsWith("2MRS:", g.Id);
+    }
+
+    [Fact]
+    public async Task NearbyUniverse_UngcMatch_LendsInclinationAndDiameter()
+    {
+        var ds = await Build(new NearbyUniverseBuilder());
+        var n253 = Assert.Single(ds.Objects.OfType<Galaxy>(), g => g.AltNames.Contains("NGC 253"));
+        Assert.Equal(85, n253.InclinationDeg);
+        Assert.True(n253.InclinationMeasured);
+        Assert.Equal(BuilderSupportDiameter(37.15, 3.94), n253.DiameterKpc!.Value, 6); // UNGC a26 first
+    }
+
+    private static double BuilderSupportDiameter(double arcmin, double mpc)
+    {
+        double z = Universe3D.Core.Cosmology.CosmologyModel.Default.RedshiftAtComovingDistance(mpc);
+        return mpc * 1000.0 * arcmin / 60.0 * Math.PI / 180.0 / (1 + z);
+    }
+
+    /// <summary>Spec §3: PA and axis ratio come from HyperLEDA first, as a pair, before the catalog's own b/a.</summary>
+    [Fact]
+    public async Task Shape_PrefersHyperLedaPair()
+    {
+        double ledaQ = Math.Pow(10, -0.69); // HyperLEDA NGC 253: logR25 0.69, PA 53
+        var nearby = await Build(new NearbyUniverseBuilder());
+        var n = Assert.Single(nearby.Objects.OfType<Galaxy>(), g => g.AltNames.Contains("NGC 253"));
+        Assert.Equal(53, n.PaDeg);
+        Assert.Equal(ledaQ, n.AxisRatio!.Value, 9); // not 2MRS b/a 0.264
+
+        var lv = await Build(new LocalVolumeBuilder());
+        var u = Assert.Single(lv.Objects.OfType<Galaxy>(), g => g.AltNames.Contains("NGC 253"));
+        Assert.Equal(53, u.PaDeg);
+        Assert.Equal(ledaQ, u.AxisRatio!.Value, 9); // not UNGC b/a 0.22
+    }
+
     [Fact]
     public async Task NearbyUniverse_WithoutMeasuredDistance_UsesRedshift()
     {

@@ -33,6 +33,8 @@ curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/cat
 curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=80.8942-69.7561&-c.rm=1&-out.max=50"
 # then append only the `Sag dSph` row (Task 12b, same reason):
 curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=283.7629-30.4783&-c.rm=1&-out.max=50"
+# then append the `MESSIER081` row (final fix wave, ruling R39: the nearby universe takes M81's UNGC distance):
+curl -s "https://vizier.cfa.harvard.edu/viz-bin/asu-tsv?-source=J/AJ/145/101/catalog&-out=Name,_RAJ2000,_DEJ2000,a26,b/a,TT,Tdw,HRV,Dist,i,Vlg&-c=148.8883%2B69.0653&-c.rm=1&-out.max=50"
 ```
 
 ### `mcconnachie.tsv`

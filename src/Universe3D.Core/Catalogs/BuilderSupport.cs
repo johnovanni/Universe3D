@@ -102,6 +102,19 @@ internal static class BuilderSupport
         };
     }
 
+    /// <summary>
+    /// Spec §3 shape order: the position angle and axis ratio of the first source that has both, HyperLEDA then
+    /// McConnachie; otherwise the first PA (HyperLEDA, McConnachie) and the first axis ratio (HyperLEDA, McConnachie,
+    /// then the catalogs' own b/a in the order given).
+    /// </summary>
+    public static (double? PaDeg, double? AxisRatio) Shape(double? ledaPa, double? ledaQ, double? mccPa, double? mccQ,
+        params double?[] catalogQ)
+    {
+        if (ledaPa != null && ledaQ != null) return (ledaPa, ledaQ);
+        if (mccPa != null && mccQ != null) return (mccPa, mccQ);
+        return (ledaPa ?? mccPa, ledaQ ?? mccQ ?? catalogQ.FirstOrDefault(q => q != null));
+    }
+
     /// <summary>HyperLEDA values of one row: D25 in arcmin, axis ratio from logR25, PA and morphology.</summary>
     public static (double? D25Arcmin, double? AxisRatio, double? PaDeg, MorphologyInfo Morphology) Leda(TsvTable leda, int row)
     {

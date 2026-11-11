@@ -7,8 +7,8 @@ using static Universe3D.Core.Catalogs.BuilderSupport;
 namespace Universe3D.Core.Catalogs;
 
 /// <summary>
-/// Nearby universe: the 2MASS Redshift Survey, with HyperLEDA (diameter, PA, axis ratio) and Cosmicflows-4
-/// (measured distances) cross-matched by position.
+/// Nearby universe: the 2MASS Redshift Survey, with HyperLEDA (diameter, PA, axis ratio) and the measured distances of
+/// McConnachie, UNGC and Cosmicflows-4 (in that order, spec §3) cross-matched by position.
 /// </summary>
 public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : IDataSetBuilder
 {
@@ -16,6 +16,18 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
     private const string Cf4Source = "J/ApJ/944/94/table2";
     private const string Cf4Name = PeculiarVelocityRule.Cosmicflows4;
     private const double MatchArcsec = 30;
+    private const string UngcSource = "J/AJ/145/101/catalog";
+    private const string MccSource = "J/AJ/144/4/catalog";
+    private static readonly string[] UngcColumns =
+        ["Name", "_RAJ2000", "_DEJ2000", "a26", "b/a", "TT", "Tdw", "HRV", "Dist", "i", "Vlg"];
+    private static readonly string[] MccColumns =
+        ["Name", "MType", "_RAJ2000", "_DEJ2000", "D", "HRV", "PA", "Ell"];
+
+    /// <summary>
+    /// A Local Volume galaxy matches a 2MRS galaxy within max(30″, 0.1 × its a26 diameter), at most 120″ (the
+    /// catalogs centre large, irregular galaxies differently), and only if their velocities agree within 300 km/s.
+    /// </summary>
+    private const double LocalMaxArcsec = 120, LocalA26Fraction = 0.1, LocalMaxDeltaVKms = 300;
 
     // CAT holds the catalog designation ("MESSIER_087", "NGC_0253"); SimbadName is the 2MASX name.
     private static readonly string[] TwoMrsColumns =
@@ -35,7 +47,14 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
             .ConfigureAwait(false);
         progress?.Report("Downloading Cosmicflows-4 (J/ApJ/944/94)…");
         var cf4 = await client.QueryAsync(Cf4Source, Cf4Columns, null, ct).ConfigureAwait(false);
+        progress?.Report("Downloading UNGC (J/AJ/145/101)…");
+        var ungc = await client.QueryAsync(UngcSource, UngcColumns, null, ct).ConfigureAwait(false);
+        progress?.Report("Downloading McConnachie 2012 (J/AJ/144/4)…");
+        var mcc = await client.QueryAsync(MccSource, MccColumns, null, ct).ConfigureAwait(false);
         progress?.Report("Building the nearby universe…");
+
+        var local = LocalVolumeBuilder.MeasuredDistances(mcc, ungc);
+        var localFor = MatchLocalVolume(twoMrs, local);
 
         var ledaIndex = Index(leda, "_RAJ2000", "_DEJ2000", MatchArcsec);
         var cf4Index = Index(cf4, "RAJ2000", "DEJ2000", MatchArcsec);
@@ -44,7 +63,7 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
             if (cf4.GetInt(i, "PGC") is { } pgc) cf4ByPgc.TryAdd(pgc, i);
 
         var objects = new List<CosmicObject>(twoMrs.Count);
-        int skipped = 0, excluded = 0, measured = 0;
+        int skipped = 0, excluded = 0, cf4Used = 0, localUsed = 0;
         for (int i = 0; i < twoMrs.Count; i++)
         {
             if (i % 4096 == 0) ct.ThrowIfCancellationRequested();
@@ -52,8 +71,15 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
 
             int l = ledaIndex.FindNearest(pos.Ra, pos.Dec);
             int? pgc = l >= 0 ? leda.GetInt(l, "PGC") : null;
-            int c = pgc is { } p && cf4ByPgc.TryGetValue(p, out int byPgc) ? byPgc : cf4Index.FindNearest(pos.Ra, pos.Dec);
-            double? dMpc = c >= 0 && cf4.GetDouble(c, "DM") is { } dm ? Math.Pow(10, (dm - 25) / 5) : null;
+            var lv = localFor[i] >= 0 ? local[localFor[i]] : null;
+            double? dMpc = lv?.DistanceMpc;
+            string? dCatalog = lv?.Catalog;
+            if (dMpc == null)
+            {
+                int c = pgc is { } p && cf4ByPgc.TryGetValue(p, out int byPgc) ? byPgc : cf4Index.FindNearest(pos.Ra, pos.Dec);
+                dMpc = c >= 0 && cf4.GetDouble(c, "DM") is { } dm ? Math.Pow(10, (dm - 25) / 5) : null;
+                if (dMpc != null) dCatalog = Cf4Name;
+            }
             double? cz = twoMrs.GetDouble(i, "cz");
             if (dMpc == null && cz == null) { skipped++; continue; }
 
@@ -65,7 +91,10 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
 
             var sources = new List<string> { "2MRS" };
             if (l >= 0) sources.Add("HyperLEDA");
-            if (dMpc != null) sources.Add(Cf4Name);
+            if (lv != null) sources.AddRange(lv.Sources);
+            else if (dMpc != null) sources.Add(Cf4Name);
+            var (pa, q) = Shape(ledaPa, ledaQ, lv?.MccPaDeg, lv?.MccAxisRatio, twoMrs.GetDouble(i, "b/a"),
+                lv?.UngcAxisRatio);
 
             string id = twoMrs.Get(i, "ID") ?? Coord(pos.Ra, pos.Dec);
             var input = new GalaxyInput(
@@ -74,26 +103,61 @@ public sealed class NearbyUniverseBuilder(DistanceResolver? resolver = null) : I
                     pgc is { } pg ? string.Create(CultureInfo.InvariantCulture, $"PGC {pg}") : null,
                     twoMrs.Get(i, "SimbadName") ?? "2MASX J" + id],
                 Ra: pos.Ra, Dec: pos.Dec,
-                MeasuredMpc: dMpc, MeasuredCatalog: dMpc != null ? Cf4Name : null,
+                MeasuredMpc: dMpc, MeasuredCatalog: dCatalog,
                 CzHelio: cz, Morphology: morph,
-                PaDeg: ledaPa,
-                AxisRatio: twoMrs.GetDouble(i, "b/a") ?? ledaQ,
-                InclinationDeg: null,
-                DiameterArcmin: d25 ?? isoArcmin,
+                PaDeg: pa,
+                AxisRatio: q,
+                InclinationDeg: lv?.UngcInclinationDeg,
+                DiameterArcmin: lv?.A26Arcmin ?? d25 ?? isoArcmin,
                 Magnitude: twoMrs.GetDouble(i, "Kcmag"),
                 Sources: sources.ToArray());
 
             if (MakeGalaxy(input, _resolver) is { } g)
             {
                 objects.Add(g);
-                if (g.DistanceSource == DistanceSource.Measured) measured++;
+                if (lv != null) localUsed++;
+                else if (g.DistanceSource == DistanceSource.Measured) cf4Used++;
             }
             else excluded++;
         }
 
         string summary = $"2MRS ({TwoMrsSource}): {twoMrs.Count} rows; HyperLEDA ({HyperLedaSource}): {leda.Count} rows; " +
-                         $"{Cf4Name} ({Cf4Source}): {cf4.Count} rows, {measured} measured distances used";
+                         $"McConnachie 2012 ({MccSource}) and UNGC ({UngcSource}): {localUsed} measured distances used; " +
+                         $"{Cf4Name} ({Cf4Source}): {cf4.Count} rows, {cf4Used} measured distances used";
         return new DataSet(Kind, objects, excluded, skipped, DateTime.UtcNow, summary);
+    }
+
+    /// <summary>
+    /// For each 2MRS row, the index of the Local Volume entry that is the same galaxy, or -1. Candidate pairs lie
+    /// within the entry's tolerance and agree in velocity when both have one; they are taken nearest first, each entry
+    /// and each row at most once.
+    /// </summary>
+    private static int[] MatchLocalVolume(TsvTable twoMrs, IReadOnlyList<LocalVolumeEntry> local)
+    {
+        var index = Index(twoMrs, "RAJ2000", "DEJ2000", LocalMaxArcsec);
+        var pairs = new List<(double Sep, int Row, int Entry)>();
+        for (int e = 0; e < local.Count; e++)
+        {
+            var lv = local[e];
+            double tol = Math.Clamp(LocalA26Fraction * (lv.A26Arcmin ?? 0) * 60, MatchArcsec, LocalMaxArcsec);
+            foreach (var (row, sep) in index.FindWithin(lv.Ra, lv.Dec, tol))
+            {
+                if (lv.HrvKms is { } v && twoMrs.GetDouble(row, "cz") is { } cz && Math.Abs(cz - v) > LocalMaxDeltaVKms)
+                    continue;
+                pairs.Add((sep, row, e));
+            }
+        }
+
+        var result = new int[twoMrs.Count];
+        Array.Fill(result, -1);
+        var taken = new bool[local.Count];
+        foreach (var (_, row, e) in pairs.OrderBy(p => p.Sep).ThenBy(p => p.Row).ThenBy(p => p.Entry))
+        {
+            if (result[row] >= 0 || taken[e]) continue;
+            result[row] = e;
+            taken[e] = true;
+        }
+        return result;
     }
 
     /// <summary>

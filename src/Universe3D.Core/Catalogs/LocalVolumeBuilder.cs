@@ -137,14 +137,15 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
         if (ledaRow >= 0) sources.Add("HyperLEDA");
 
         string name = mcc.Get(i, "Name") ?? Coord(pos.Ra, pos.Dec);
+        var (pa, q) = Shape(ledaPa, ledaQ, mcc.GetDouble(i, "PA"), 1 - mcc.GetDouble(i, "Ell"), U("b/a"));
         return new GalaxyInput(
             Id: "MCC:" + name,
             Designations: [name, u >= 0 ? ungc.Get(u, "Name") : null],
             Ra: pos.Ra, Dec: pos.Dec,
             MeasuredMpc: measured, MeasuredCatalog: mccMpc != null ? MccName : UngcName,
             CzHelio: cz, Morphology: morph,
-            PaDeg: mcc.GetDouble(i, "PA") ?? ledaPa,
-            AxisRatio: (1 - mcc.GetDouble(i, "Ell")) ?? U("b/a") ?? ledaQ,
+            PaDeg: pa,
+            AxisRatio: q,
             InclinationDeg: U("i"),
             DiameterArcmin: U("a26") ?? d25,
             Magnitude: null, Sources: sources.ToArray());
@@ -162,17 +163,56 @@ public sealed class LocalVolumeBuilder(DistanceResolver? resolver = null) : IDat
         if (morph.Class == MorphologyClass.Unknown && ledaMorph.Class != MorphologyClass.Unknown) morph = ledaMorph;
 
         string name = ungc.Get(i, "Name") ?? Coord(pos.Ra, pos.Dec);
+        var (pa, q) = Shape(ledaPa, ledaQ, null, null, ungc.GetDouble(i, "b/a"));
         return new GalaxyInput(
             Id: "UNGC:" + name, Designations: [name], Ra: pos.Ra, Dec: pos.Dec,
             MeasuredMpc: measured, MeasuredCatalog: UngcName, CzHelio: cz, Morphology: morph,
-            PaDeg: ledaPa,
-            AxisRatio: ungc.GetDouble(i, "b/a") ?? ledaQ,
+            PaDeg: pa,
+            AxisRatio: q,
             InclinationDeg: ungc.GetDouble(i, "i"),
             DiameterArcmin: ungc.GetDouble(i, "a26") ?? d25,
             Magnitude: null,
             Sources: ledaRow >= 0 ? [UngcName, "HyperLEDA"] : [UngcName]);
     }
 
+    /// <summary>
+    /// The measured distances of the Local Volume catalogs, for the nearby universe (ruling R39): one entry per
+    /// McConnachie galaxy (merged with its UNGC row as in this data set) and per remaining UNGC galaxy, each with a
+    /// distance in the spec's order (McConnachie, then UNGC) and the values it can lend: velocity, a26 diameter,
+    /// McConnachie PA and axis ratio, UNGC axis ratio and inclination.
+    /// </summary>
+    internal static List<LocalVolumeEntry> MeasuredDistances(TsvTable mcc, TsvTable ungc)
+    {
+        var ungcFor = MatchToUngc(mcc, ungc);
+        var taken = new bool[ungc.Count];
+        var entries = new List<LocalVolumeEntry>();
+        for (int i = 0; i < mcc.Count; i++)
+        {
+            int u = ungcFor[i];
+            if (u >= 0) taken[u] = true;
+            if (Position(mcc, i, "_RAJ2000", "_DEJ2000") is not { } pos) continue;
+            double? U(string col) => u >= 0 ? ungc.GetDouble(u, col) : null;
+            double? mccMpc = mcc.GetDouble(i, "D") / 1000.0;
+            if ((mccMpc ?? U("Dist")) is not { } d) continue;
+            entries.Add(new LocalVolumeEntry(pos.Ra, pos.Dec, d, mccMpc != null ? MccName : UngcName,
+                mcc.GetDouble(i, "HRV") ?? U("HRV"), U("a26"), mcc.GetDouble(i, "PA"), 1 - mcc.GetDouble(i, "Ell"),
+                U("b/a"), U("i"), u >= 0 ? [MccName, UngcName] : [MccName]));
+        }
+        for (int u = 0; u < ungc.Count; u++)
+        {
+            if (taken[u] || Position(ungc, u, "_RAJ2000", "_DEJ2000") is not { } pos) continue;
+            if (ungc.GetDouble(u, "Dist") is not { } d) continue;
+            entries.Add(new LocalVolumeEntry(pos.Ra, pos.Dec, d, UngcName, ungc.GetDouble(u, "HRV"),
+                ungc.GetDouble(u, "a26"), null, null, ungc.GetDouble(u, "b/a"), ungc.GetDouble(u, "i"), [UngcName]));
+        }
+        return entries;
+    }
+
     private static MorphologyInfo UngcMorphology(TsvTable ungc, int row) =>
         MorphologyParser.FromUngc(ungc.GetInt(row, "TT"), ungc.Get(row, "Tdw"));
 }
+
+/// <summary>A Local Volume galaxy's measured distance and the values another data set can borrow from it.</summary>
+internal sealed record LocalVolumeEntry(
+    double Ra, double Dec, double DistanceMpc, string Catalog, double? HrvKms, double? A26Arcmin,
+    double? MccPaDeg, double? MccAxisRatio, double? UngcAxisRatio, double? UngcInclinationDeg, string[] Sources);

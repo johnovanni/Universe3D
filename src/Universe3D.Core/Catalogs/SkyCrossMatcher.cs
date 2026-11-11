@@ -50,6 +50,28 @@ public sealed class SkyCrossMatcher
     {
         int best = -1;
         double bestSep = _tolDeg;
+        foreach (var (index, sep) in Candidates(raDeg, decDeg))
+            if (sep <= bestSep) { bestSep = sep; best = index; }
+        return best;
+    }
+
+    /// <summary>Every added point within <paramref name="radiusArcsec"/> (at most the tolerance), with its separation.</summary>
+    public IEnumerable<(int Index, double SepArcsec)> FindWithin(double raDeg, double decDeg, double radiusArcsec)
+    {
+        if (radiusArcsec > _tolDeg * 3600 * (1 + 1e-12))
+            throw new ArgumentOutOfRangeException(nameof(radiusArcsec), "The radius must not exceed the tolerance.");
+        return Within();
+
+        IEnumerable<(int, double)> Within()
+        {
+            foreach (var (index, sep) in Candidates(raDeg, decDeg))
+                if (sep * 3600 <= radiusArcsec) yield return (index, sep * 3600);
+        }
+    }
+
+    /// <summary>The points in the cells around a position, with their separation in degrees.</summary>
+    private IEnumerable<(int Index, double SepDeg)> Candidates(double raDeg, double decDeg)
+    {
         int b0 = Band(decDeg);
         for (int b = Math.Max(0, b0 - 1); b <= Math.Min(_bandCount - 1, b0 + 1); b++)
         {
@@ -62,12 +84,8 @@ public sealed class SkyCrossMatcher
                 int c = wide ? ((c0 + d) % n + n) % n : d;
                 if (!_grid.TryGetValue((b, c), out var list)) continue;
                 foreach (var (ra, dec, index) in list)
-                {
-                    double sep = SkyMath.AngularSeparationDeg(raDeg, decDeg, ra, dec);
-                    if (sep <= bestSep) { bestSep = sep; best = index; }
-                }
+                    yield return (index, SkyMath.AngularSeparationDeg(raDeg, decDeg, ra, dec));
             }
         }
-        return best;
     }
 }
