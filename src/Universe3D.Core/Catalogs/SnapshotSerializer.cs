@@ -33,7 +33,8 @@ public static class SnapshotSerializer
         try
         {
             using var gz = new GZipStream(stream, CompressionMode.Decompress, leaveOpen: true);
-            using var r = new BinaryReader(gz, Encoding.UTF8, leaveOpen: true);
+            using var buffered = new BufferedStream(gz, 1 << 16); // BinaryReader issues many tiny reads
+            using var r = new BinaryReader(buffered, Encoding.UTF8, leaveOpen: true);
             var magic = Encoding.ASCII.GetString(r.ReadBytes(Magic.Length));
             if (magic != Magic) throw new InvalidDataException($"Not a Universe3D snapshot (magic '{magic}').");
             int version = r.ReadInt32();
