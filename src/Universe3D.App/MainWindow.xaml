@@ -4,7 +4,7 @@
         xmlns:gl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
         xmlns:vm="clr-namespace:Universe3D.App.ViewModels"
         xmlns:res="clr-namespace:Universe3D.App.Resources"
-        Title="Universe3D" Width="1500" Height="920" MinWidth="1100" MinHeight="680"
+        Title="Universe3D" Icon="/Universe3D.App;component/Assets/Universe3D.ico" Width="1500" Height="920" MinWidth="1100" MinHeight="680"
         Background="{StaticResource WindowBrush}" Foreground="{StaticResource TextBrush}"
         WindowStartupLocation="CenterScreen" PreviewKeyDown="OnPreviewKeyDown">
     <Window.Resources>
