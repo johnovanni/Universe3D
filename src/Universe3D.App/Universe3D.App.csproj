@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <ApplicationIcon>Assets\Universe3D.ico</ApplicationIcon>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -15,6 +16,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Universe3D.Rendering\Universe3D.Rendering.csproj" />
     <ProjectReference Include="..\Universe3D.Core\Universe3D.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Universe3D.ico" />
   </ItemGroup>
 
 </Project>
